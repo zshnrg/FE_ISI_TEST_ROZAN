@@ -28,7 +28,7 @@ const Brand = () => {
             <h1 className="text-2xl font-semibold leading-6 mb-2 text-neutral-900 dark:text-neutral-50">
                 <span className="text-sm">Welcome to</span>
                 <br />
-                OneKanban
+                Bankanban
             </h1>
         </div>
     )
