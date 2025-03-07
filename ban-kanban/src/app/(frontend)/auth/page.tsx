@@ -1,6 +1,7 @@
 "use client";
 
 import { useHash } from "@/hooks/useHash";
+import { useLoadedState } from "@/hooks/useLoadedState";
 
 import Image from "next/image";
 import Login from "./_components/login";
@@ -12,6 +13,11 @@ import { Loading } from "@/components/ui/loading";
 export default function Home() {
 
     const { hash } = useHash();
+    const isLoaded = useLoadedState(hash);
+
+    if (isLoaded && (!hash || (!hash.match('login') && !hash.match('register') && !hash.match('success')))) {
+        window.location.replace('/auth#login');
+    }
 
     return (
         <div className="flex items-center justify-center min-h-svh">
@@ -27,7 +33,7 @@ export default function Home() {
                     hash?.match('success') && <SuccessCode />
                 }
                 {
-                    !hash && <Loading />
+                    !isLoaded && <Loading />
                 }
             </div>
         </div>
