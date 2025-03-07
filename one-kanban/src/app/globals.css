@@ -16,3 +16,7 @@
 body {
   background: var(--background);
 }
+
+input[type="password"]::-ms-reveal {
+  display: none;
+} 
