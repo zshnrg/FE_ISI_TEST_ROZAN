@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+:root {
+  --background: theme('colors.neutral.200');
+  --foreground: theme('colors.neutral.900');
+}
+
+/* Ensure the dark mode styles apply properly */
+[data-theme="dark"] {
+  --background: theme('colors.neutral.900');
+  --foreground: theme('colors.neutral.200');
+}
+
+body {
+  background: var(--background);
+}
+
+input[type="password"]::-ms-reveal {
+  display: none;
+} 
