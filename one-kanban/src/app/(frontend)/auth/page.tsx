@@ -2,8 +2,9 @@
 
 import { useHash } from "@/hooks/useHash";
 
-import Login from "./_components/login";
 import Image from "next/image";
+import Login from "./_components/login";
+import Register from "./_components/register";
 
 export default function Home() {
 
@@ -15,6 +16,9 @@ export default function Home() {
                 <Brand />
                 {
                     hash?.match('login') && <Login />
+                }
+                {
+                    hash?.match('register') && <Register />
                 }
             </div>
         </div>
