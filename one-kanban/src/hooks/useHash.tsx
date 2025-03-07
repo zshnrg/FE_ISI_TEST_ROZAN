@@ -8,20 +8,28 @@ export const useHash = () => {
   const path = usePathname()
   const search = useSearchParams()
 
+  // Initialize hash with window.location.hash
   const [hash, setHash] = useState<string | null>(null)
 
   useEffect(() => {
     const onHashChanged = () => setHash(window.location.hash)
+
+    onHashChanged()
+
     const { pushState, replaceState } = window.history
+
     window.history.pushState = function (...args) {
       pushState.apply(window.history, args)
       setTimeout(() => setHash(window.location.hash))
     }
+
     window.history.replaceState = function (...args) {
       replaceState.apply(window.history, args)
       setTimeout(() => setHash(window.location.hash))
     }
+
     window.addEventListener('hashchange', onHashChanged)
+
     return () => {
       window.removeEventListener('hashchange', onHashChanged)
     }
