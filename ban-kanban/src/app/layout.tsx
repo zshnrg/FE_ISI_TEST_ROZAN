@@ -9,8 +9,8 @@ const jakartaPlus = Plus_Jakarta_Sans({
 })
 
 export const metadata: Metadata = {
-  title: "OneKanban",
-  description: "Easily manage your tasks with OneKanban",
+  title: "Bankanban",
+  description: "Easily manage your tasks with Bankanban",
 };
 
 export default function RootLayout({

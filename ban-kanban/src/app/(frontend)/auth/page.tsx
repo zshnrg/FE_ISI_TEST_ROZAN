@@ -5,6 +5,7 @@ import { useHash } from "@/hooks/useHash";
 import Image from "next/image";
 import Login from "./_components/login";
 import Register from "./_components/register";
+import SuccessCode from "./_components/success";
 
 export default function Home() {
 
@@ -20,6 +21,9 @@ export default function Home() {
                 {
                     hash?.match('register') && <Register />
                 }
+                {
+                    hash?.match('success') && <SuccessCode />
+                }
             </div>
         </div>
     );
@@ -32,7 +36,7 @@ const Brand = () => {
             <h1 className="text-2xl font-semibold leading-6 mb-2 text-neutral-900 dark:text-neutral-50">
                 <span className="text-sm">Welcome to</span>
                 <br />
-                OneKanban
+                Bankanban
             </h1>
         </div>
     )
