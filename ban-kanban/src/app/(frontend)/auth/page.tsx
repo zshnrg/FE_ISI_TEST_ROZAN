@@ -7,6 +7,8 @@ import Login from "./_components/login";
 import Register from "./_components/register";
 import SuccessCode from "./_components/success";
 
+import { Loading } from "@/components/ui/loading";
+
 export default function Home() {
 
     const { hash } = useHash();
@@ -23,6 +25,9 @@ export default function Home() {
                 }
                 {
                     hash?.match('success') && <SuccessCode />
+                }
+                {
+                    !hash && <Loading />
                 }
             </div>
         </div>
