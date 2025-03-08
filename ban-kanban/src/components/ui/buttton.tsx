@@ -20,7 +20,7 @@ export function Button({
     return (
         <button
             onClick={onClick}
-            className={`${buttonTypes[buttonType]} py-4 px-6 text-md rounded-full transition-colors ${className}`}
+            className={`${buttonTypes[buttonType]} py-4 px-6 text-md rounded-full transition-colors cursor-pointer ${className}`}
             {...props}
         >
             {children}

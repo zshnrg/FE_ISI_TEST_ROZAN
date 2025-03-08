@@ -9,10 +9,11 @@ import { UserProfileImage } from "@/components/ui/profile";
 import { useDisclosure } from "@/hooks/useDisclosure";
 import { useEffect, useState } from "react";
 
-import { Member } from "@/lib/types/user";
 import { getSelf, getUserByCode } from "@/lib/actions/user";
+import { Member } from "@/lib/types/user";
+import { Project } from "@/lib/types/project";
 
-export default function NewProjectModal({ disclosure }: { disclosure: ReturnType<typeof useDisclosure> }) {
+export default function EditProjectModal({ disclosure, data }: { disclosure: ReturnType<typeof useDisclosure>, data : Project | null }) {
     
     const [formData, setFormData] = useState<{ name: string, description: string, members: Member[]}>({
         name: "",
@@ -83,7 +84,7 @@ export default function NewProjectModal({ disclosure }: { disclosure: ReturnType
     return (
         <Modal
             {...disclosure}
-            title="Create a new project"
+            title="Edit project"
             size="xl"
         >
             <form className="flex flex-col gap-4">
@@ -142,10 +143,10 @@ export default function NewProjectModal({ disclosure }: { disclosure: ReturnType
 
                 <div className="flex flex-col-reverse md:flex-row gap-4">
                     <Button buttonType="secondary" type="button" onClick={disclosure.onClose}>
-                        Cancel
+                        Discard
                     </Button>
                     <Button buttonType="primary" className="w-full">
-                        Create
+                        Save
                     </Button>
                 </div>
 
