@@ -1,56 +1,41 @@
 'use client'
 
-import { useState } from "react";
+import { useActionState, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { Input } from "@/components/ui/input";
 import { LuEye, LuEyeClosed } from "react-icons/lu";
-import { Button } from "@/components/ui/buttton";
+import { Button } from "@/components/ui/buttton"
+;
+import { login } from "@/lib/actions/auth/auth";
+import { LoginFormState } from "@/lib/definitions/auth";
 
 export default function Login() {
 
-    const [ isVisible, setIsVisible ] = useState(false);
+    const [isVisible, setIsVisible] = useState(false);
     const router = useRouter();
-
+    
     const [formData, setFormData] = useState({
         email: "",
         password: ""
     });
 
-    const [errors, setErrors] = useState<{ 
-        email?: string; 
-        password?: string 
-    }>({});
+    const [state, action, pending] = useActionState<LoginFormState, FormData>(async (prevState: LoginFormState, formData: FormData) => {
+        const result = await login(prevState, formData);
+        if (result?.errors) {
+            return { errors: result.errors, values: formData };
+        }
+        return {};
+    }, undefined);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-    }
-
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        
-        if (!formData.email) {
-            setErrors({ ...errors, email: "Email is required" });
-        } else {
-            delete errors.email;
-        }
-
-        if (!formData.password) {
-            setErrors({ ...errors, password: "Password is required" });
-        } else {
-            delete errors.password;
-        }
-
-        if (Object.keys(errors).length === 0) {
-            console.log(formData);
-        }
+        setFormData({ ...formData, [e.target.name]: e.target.value });
     }
 
     return (
         <form 
             className="flex flex-col gap-12"
-            onSubmit={handleSubmit}
+            action={action}
         >
             <div className="flex flex-col gap-4">
                 <div>
@@ -61,7 +46,7 @@ export default function Login() {
                         placeholder="Email"
                         onChange={handleChange}
                     />
-                    {errors.email && <p className="ml-4 mt-2 text-red-500 text-sm">{errors.email}</p>}
+                    {state?.errors?.email && <p className="ml-4 mt-2 text-red-500 text-sm">{state.errors.email}</p>}
                 </div>
                 <div>
                     <Input 
@@ -73,7 +58,7 @@ export default function Login() {
                         onLeadingIconClick={() => setIsVisible(!isVisible)}
                         onChange={handleChange}
                     />
-                    {errors.password && <p className="ml-4 mt-2 text-red-500 text-sm">{errors.password}</p>}
+                    {state?.errors?.password && <p className="ml-4 mt-2 text-red-500 text-sm">{state.errors.password}</p>}
                 </div>
             </div>
             <div className="flex gap-4">
@@ -81,11 +66,12 @@ export default function Login() {
                     className="shrink-0"
                     type="button" 
                     buttonType="secondary" 
-                    onClick={() => router.push('/auth#register')}
+                    onClick={() => router.push('/auth/register')}
                 >
                     Register
                 </Button>
                 <Button 
+                    disabled={pending}
                     className="w-full"
                     type="submit" 
                     buttonType="primary"

@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/buttton";
 import { register } from "@/lib/actions/auth/auth";
 import { RegisterFormState } from "@/lib/definitions/auth";
 
-export default function Register() {
+export default function RegisterForm() {
     const router = useRouter();
     const [isVisible, setIsVisible] = useState(false);
 
@@ -101,7 +101,7 @@ export default function Register() {
                 </div>
             </div>
             <div className="flex gap-4">
-                <Button className="shrink-0" type="button" buttonType="secondary" onClick={() => router.push('/auth#login')}>
+                <Button className="shrink-0" type="button" buttonType="secondary" onClick={() => router.push('/auth/login')}>
                     Back
                 </Button>
                 <Button disabled={pending} className="w-full" type="submit" buttonType="primary">
