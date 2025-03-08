@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { hash, genSaltSync, compare } from "bcrypt";
 
 import { query } from "@/lib/services/db";
-import { createSession } from "@/lib/actions/session";
+import { createSession, destroySession } from "@/lib/actions/session";
 import { LoginFormSchema, LoginFormState, RegisterFormSchema, RegisterFormState } from "@/lib/definitions/auth";
 
 /**
@@ -108,4 +108,11 @@ export async function login (
 
     await createSession(user.user_id);
     redirect("/");
+}
+
+/**
+ * Logs out the current user.
+ */
+export async function logout () {
+    await destroySession();
 }

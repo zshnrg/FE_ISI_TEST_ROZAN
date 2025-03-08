@@ -11,7 +11,7 @@ export const getSelf = cache( async () => {
     const session = await verifySession();
 
     const { rows } = await query(
-        `SELECT user_id, user_full_name, user_email, user_code
+        `SELECT *
          FROM public.users
          WHERE user_id = $1`,
         [session.user_id]
