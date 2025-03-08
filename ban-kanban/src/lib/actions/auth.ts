@@ -42,7 +42,7 @@ export async function register (
 
     // return only user_id, full_name, email, and code
     const { rows } = await query(
-        `INSERT INTO public.users (user_full_name, user_email, user_password)
+        `INSERT INTO users (user_full_name, user_email, user_password)
          VALUES ($1, $2, $3)
             RETURNING user_id, user_full_name, user_email, user_code`,
         [full_name, email, hashedPassword]
@@ -80,7 +80,7 @@ export async function login (
     
     const { rows } = await query(
         `SELECT user_id, user_full_name, user_email, user_password
-         FROM public.users
+         FROM users
          WHERE user_email = $1`,
         [email]
     );
