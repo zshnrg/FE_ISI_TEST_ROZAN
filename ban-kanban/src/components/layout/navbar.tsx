@@ -1,13 +1,15 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useTheme } from "@/contexts/themeContext";
+
 import Image from "next/image";
 import { MdOutlineArrowForwardIos, MdOutlineBedtime, MdOutlineBrightness5, MdOutlineContentCopy, MdOutlineLogout, MdOutlineMenu, MdOutlineNotifications } from "react-icons/md";
-import { useTheme } from "@/contexts/themeContext";
-import { User } from "@/lib/types/auth";
-import { getSelf } from "@/lib/actions/user";
 import { UserProfileImage } from "../ui/profile";
+
+import { User } from "@/lib/types/auth";
 import { destroySession } from "@/lib/actions/session";
+import { getSelf } from "@/lib/actions/user";
 
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);

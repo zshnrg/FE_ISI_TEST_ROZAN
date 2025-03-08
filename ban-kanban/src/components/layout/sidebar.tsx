@@ -38,7 +38,7 @@ export default function SideBar() {
                         initial={{ x: "-100%" }}
                         exit={{ x: "-100%" }}
                         transition={{ duration: 0.2, type: "tween" }}
-                        className={`h-[calc(100svh-56px)] md:h-[calc(100svh-64px)] w-64 bg-neutral-100 dark:bg-neutral-800/50 text-white flex flex-col gap-4 p-6 sticky top-14 md:top-16 lg:top-16"}`}
+                        className={`h-[calc(100svh-56px)] md:h-[calc(100svh-64px)] w-64 bg-neutral-100 dark:bg-neutral-800/50 text-white flex flex-col gap-4 p-6 fixed md:sticky top-14 md:top-16 lg:top-16"}`}
                     >
                         <button 
                             className="absolute top-4 -right-10 bg-neutral-100 dark:bg-neutral-800/50 w-10 h-12 p-2 rounded-r-lg text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-50"
