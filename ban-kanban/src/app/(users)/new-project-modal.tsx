@@ -4,12 +4,13 @@ import { Button } from "@/components/ui/buttton";
 import { Input, TextArea } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { MdClose, MdOutlineSearch } from "react-icons/md";
+import { UserProfileImage } from "@/components/ui/profile";
 
 import { useDisclosure } from "@/hooks/useDisclosure";
 import { useEffect, useState } from "react";
+
 import { Member } from "@/lib/types/user";
 import { getSelf, getUserByCode } from "@/lib/actions/user";
-import { UserProfileImage } from "@/components/ui/profile";
 
 export default function NewProjectModal({ disclosure }: { disclosure: ReturnType<typeof useDisclosure> }) {
     
@@ -18,8 +19,6 @@ export default function NewProjectModal({ disclosure }: { disclosure: ReturnType
         description: "",
         members: []
     });
-
-    console.log(formData);
 
     useEffect(() => {
         const insertSelf = async () => {
@@ -119,7 +118,7 @@ export default function NewProjectModal({ disclosure }: { disclosure: ReturnType
                                     <div className="flex items-center gap-4">
                                         <UserProfileImage full_name={member.user_full_name} size={36} bgColor={member.user_color} />
                                         <div className="flex flex-col leading-3">
-                                            <p className="text-md font-semibold">{member.user_full_name}</p>
+                                            <p className="text-md font-semibold text-neutral-900 dark:text-neutral-50">{member.user_full_name}</p>
                                             <p className="text-sm text-neutral-500 dark:text-neutral-400">{member.user_role.charAt(0).toUpperCase() + member.user_role.slice(1)}</p>
                                         </div>
                                     </div>
