@@ -2,21 +2,11 @@
 'use server';
 
 import { redirect } from "next/navigation";
-import { hash, genSaltSync } from "bcrypt";
+import { hash, genSaltSync, compare } from "bcrypt";
 
 import { query } from "@/lib/services/db";
 import { createSession } from "@/lib/actions/session";
 import { LoginFormSchema, LoginFormState, RegisterFormSchema, RegisterFormState } from "@/lib/definitions/auth";
-
-/**
- * Hashes the given password using a salt generated from the environment variable SALT_ROUNDS.
- * @param password - The password to be hashed.
- * @returns A Promise that resolves to the hashed password.
- */
-function hashPassword(password: string) {
-    const salt = genSaltSync(parseInt(process.env.SALT_ROUNDS || "10"));
-    return hash(password, salt);
-}
 
 /**
  * Registers a new user.
@@ -47,7 +37,8 @@ export async function register (
 
     const { full_name, email, password } = validationResult.data;
 
-    const hashedPassword = await hashPassword(password);
+    const salt = genSaltSync(parseInt(process.env.SALT_ROUNDS || "10"));
+    const hashedPassword = await hash(password, salt);
 
     // return only user_id, full_name, email, and code
     const { rows } = await query(
@@ -59,7 +50,7 @@ export async function register (
 
     const user = rows[0];
     await createSession(user.user_id);
-    redirect("/auth#success");
+    redirect("/auth/register?type=success");
 }
 
 /**
@@ -86,23 +77,31 @@ export async function login (
     }
 
     const { email, password } = validationResult.data;
-
-    const hashedPassword = await hashPassword(password);
-
+    
     const { rows } = await query(
-        `SELECT user_id, user_full_name, user_email, user_code
+        `SELECT user_id, user_full_name, user_email, user_password
          FROM public.users
-         WHERE user_email = $1 AND user_password = $2`,
-        [email, hashedPassword]
+         WHERE user_email = $1`,
+        [email]
     );
 
-    const user = rows[0];
-    
-    if (!user) {
+    console.log(rows);
+
+    if (rows.length === 0) {
         return {
             errors: {
-                email: ["Invalid email or password"],
-                password: ["Invalid email or password"],
+                password: "Invalid email or password"
+            }
+        };
+    }
+
+    const user = rows[0];
+    const isValid = await compare(password, user.user_password);
+
+    if (!isValid) {
+        return {
+            errors: {
+                password: "Invalid email or password"
             }
         };
     }
