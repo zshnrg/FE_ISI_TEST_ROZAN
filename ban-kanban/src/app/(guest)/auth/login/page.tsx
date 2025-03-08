@@ -21,11 +21,7 @@ export default function Login() {
     });
 
     const [state, action, pending] = useActionState<LoginFormState, FormData>(async (prevState: LoginFormState, formData: FormData) => {
-        const result = await login(prevState, formData);
-        if (result?.errors) {
-            return { errors: result.errors, values: formData };
-        }
-        return {};
+        return await login(prevState, formData);
     }, undefined);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,6 +56,7 @@ export default function Login() {
                     />
                     {state?.errors?.password && <p className="ml-4 mt-2 text-red-500 text-sm">{state.errors.password}</p>}
                 </div>
+                {state?.message && <p className="ml-4 mt-2 text-red-500 text-sm">{state.message}</p>}
             </div>
             <div className="flex gap-4">
                 <Button 

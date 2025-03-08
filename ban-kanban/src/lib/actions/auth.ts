@@ -89,9 +89,7 @@ export async function login (
 
     if (rows.length === 0) {
         return {
-            errors: {
-                password: "Invalid email or password"
-            }
+            message: "Invalid email or password."
         };
     }
 
@@ -100,9 +98,7 @@ export async function login (
 
     if (!isValid) {
         return {
-            errors: {
-                password: "Invalid email or password"
-            }
+            message: "Invalid email or password."
         };
     }
 
