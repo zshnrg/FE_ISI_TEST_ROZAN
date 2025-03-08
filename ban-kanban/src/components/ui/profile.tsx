@@ -13,9 +13,12 @@ export function UserProfileImage({
     return (
         <div 
             className={`flex items-center justify-center rounded-full text-white`}
-            style={{ backgroundColor: bgColor, width: size, height: size, fontSize: size / 2 }}
+            style={{ backgroundColor: bgColor, width: size, height: size}}
         >
-            <span className="text-xl font-semibold">{initials}</span>
+            <span 
+                className="font-semibold"
+                style={{ fontSize: size / 5 * 2 }}
+            >{initials}</span>
         </div>
     );
 }
