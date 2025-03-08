@@ -1,7 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   redirects: async () => {
     return [
       {
@@ -10,7 +9,9 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
     ];
-  }
+  },
+  
+  reactStrictMode: false,
 };
 
 export default nextConfig;
