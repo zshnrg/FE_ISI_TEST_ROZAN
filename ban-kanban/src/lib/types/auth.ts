@@ -4,7 +4,7 @@ export interface AccountCredentials {
 }
 
 export interface User {
-    user_id: number;
+    user_id: string;
     user_full_name: string;
     user_email: string;
     user_code: string;

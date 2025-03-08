@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { LuEye, LuEyeClosed } from "react-icons/lu";
 import { Button } from "@/components/ui/buttton";
 
-import { register } from "@/lib/actions/auth/auth";
+import { register } from "@/lib/actions/auth";
 import { RegisterFormState } from "@/lib/definitions/auth";
 
 export default function RegisterForm() {

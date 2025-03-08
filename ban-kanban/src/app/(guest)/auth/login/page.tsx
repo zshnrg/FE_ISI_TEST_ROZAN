@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { LuEye, LuEyeClosed } from "react-icons/lu";
 import { Button } from "@/components/ui/buttton"
 ;
-import { login } from "@/lib/actions/auth/auth";
+import { login } from "@/lib/actions/auth";
 import { LoginFormState } from "@/lib/definitions/auth";
 
 export default function Login() {
