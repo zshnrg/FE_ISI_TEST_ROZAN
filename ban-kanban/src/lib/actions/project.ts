@@ -36,7 +36,7 @@ export async function createProject(
 
     const { rows: projectRow } = await query(
         `INSERT INTO projects (project_name, project_description)
-         VALUES ($1, $2, true)
+         VALUES ($1, $2)
             RETURNING project_id, project_name, project_description`,
         [name, description]
     );
