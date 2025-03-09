@@ -17,7 +17,7 @@ export default function Task({
     [prop: string]: unknown;
 }) {
     return (
-        <div className={`flex bg-neutral-50 dark:bg-neutral-80 rounded-xl overflow-hidden isolate ${className}`} {...props}>
+        <div className={`flex bg-neutral-50 dark:bg-neutral-800 rounded-xl overflow-hidden isolate ${className}`} {...props}>
             <div className="w-2 flex-none"
                 style={{ backgroundColor: task.task_color }}
             />

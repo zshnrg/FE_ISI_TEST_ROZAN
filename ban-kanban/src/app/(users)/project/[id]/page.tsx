@@ -9,7 +9,7 @@ import { MdAdd, MdSearch } from "react-icons/md";
 import { Button } from "@/components/ui/buttton";
 
 import KanbanBoard from "./kanban";
-import NewTasktModal from "./new-task-form";
+import NewTasktModal from "./new-task-modal";
 
 export default function Kanban() {
 

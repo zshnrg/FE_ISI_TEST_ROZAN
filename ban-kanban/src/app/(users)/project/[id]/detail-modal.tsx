@@ -15,100 +15,8 @@ import { Member } from "@/lib/types/user";
 import { Loading } from "@/components/ui/loading";
 import { getMembers } from "@/lib/actions/member";
 
-type TaskFormData = {
-    name: string;
-    description: string;
-    start_date: string;
-    end_date: string;
-    status: string;
-    color: string;
-    assigned_user: Member[];
-}
-
 
 export default function NewTasktModal({ disclosure }: { disclosure: ReturnType<typeof useDisclosure> }) {
-    
-    const { id } = useParams<{ id: string }>();
-
-    // Toast
-    const { toast } = useToast();
-
-
-    // 1. Fetch members
-    const [members, setMembers] = useState<Member[]>([]);
-    const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        async function fetchMembers() {
-            setLoading(true);
-            await getMembers(parseInt(id))
-                .then((members) => {
-                    console.log(members);
-                    setMembers(members);
-                })
-                .catch((error) => {
-                    toast("error", error.message);
-                })
-                .finally(() => {
-                    setLoading(false);
-                });
-        }
-
-        fetchMembers();
-    }, [id, toast]);
-
-
-    // The form data for the new project
-    const [formData, setFormData] = useState<TaskFormData>({
-        name: "",
-        description: "",
-        start_date: new Date().toISOString(),
-        end_date: new Date().toISOString(),
-        status: "Not Started",
-        color: "#B22222",
-        assigned_user: []
-    });
-
-    // 2. Form data handler
-    const handleFormData = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
-    }
-
-    const [searchMember, setSearchMember] = useState<string>("");
-    const filtermembers = useMemo(() => {
-        if (!searchMember) return [];
-        return members.filter((member) => member.user_full_name.toLowerCase().includes(searchMember.toLowerCase()));
-    }, [searchMember, members]);
-
-    const handlePickMember = async (user_id: string) => {
-        const user = members.find((member) => member.user_id === user_id);
-        if (!user) return
-
-        setFormData({
-            ...formData,
-            assigned_user: [...formData.assigned_user, user]
-        });
-
-        // Remove the user from the list
-        setMembers((prev) => prev.filter((member) => member.user_id !== user_id));
-        setSearchMember("");
-    }
-
-    const handleRemoveMember = (user_id: string) => {
-        const user = formData.assigned_user.find((member) => member.user_id === user_id);
-        if (!user) return
-
-        setFormData({
-            ...formData,
-            assigned_user: formData.assigned_user.filter((member) => member.user_id !== user_id)
-        });
-
-        // Add the user back to the list
-        setMembers((prev) => [...prev, user]);
-    }
     
     return loading ? (<Loading/>) : (
         <Modal
@@ -116,22 +24,14 @@ export default function NewTasktModal({ disclosure }: { disclosure: ReturnType<t
             title="Create a new project"
             size="xl"
         >
-            <form className="flex flex-col gap-4">
-
-                {/* Name */}
-                <div className="flex items-center gap-4">
-                    <Input
-                        id="name" name="name" type="text"
-                        className="w-full"
-                        placeholder="Project name *"
-                    />
-                    <div className="relative flex items-center">
-                        <input type="color" id="color" name="color" value={formData.color} onChange={handleFormData}
-                            className="w-14 h-14  shrink-0 rounded-full border focus:outline-0" style={{ backgroundColor: formData.color }}
-                        />
-                    </div>
-
-                </div>
+        <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between gap-4">
+                <h4 className="text-lg font-semibold text-neutral-900 dark:text-neutral-50">{project.project_name}</h4>
+                
+                <span className={`text-xs text-neutral-50   ${project.project_status ? "bg-green-500 dark:text-neutral-900" : "bg-neutral-400 dark:bg-neutral-500"} px-2 py-1 rounded-full`}>
+                    {project.project_status ? "Active" : "Inactive"}
+                </span>
+            </div>
                 
                 {/* Description */}
                 <TextArea
@@ -200,7 +100,7 @@ export default function NewTasktModal({ disclosure }: { disclosure: ReturnType<t
                     </Button>
                 </div>
 
-            </form>
+            </div>
         </Modal>
     );
 }
