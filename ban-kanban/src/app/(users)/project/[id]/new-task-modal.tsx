@@ -29,7 +29,7 @@ type TaskFormData = {
 }
 
 
-export default function NewTasktModal({ disclosure }: { disclosure: ReturnType<typeof useDisclosure> }) {
+export default function NewTaskModal({ disclosure }: { disclosure: ReturnType<typeof useDisclosure> }) {
 
     const { id } = useParams<{ id: string }>();
 
