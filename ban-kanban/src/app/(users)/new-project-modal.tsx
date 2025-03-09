@@ -8,6 +8,7 @@ import { UserProfileImage } from "@/components/ui/profile";
 
 import { useDisclosure } from "@/hooks/useDisclosure";
 import { useActionState, useEffect, useState } from "react";
+import { useToast } from "@/contexts/toastContext";
 
 import { Member } from "@/lib/types/user";
 import { NewProjectFormState } from "@/lib/definitions/project";
@@ -16,6 +17,9 @@ import { getSelf, getUserByCode } from "@/lib/actions/user";
 
 export default function NewProjectModal({ disclosure }: { disclosure: ReturnType<typeof useDisclosure> }) {
     
+    // Toast
+    const { toast } = useToast();
+
     // The form data for the new project
     const [formData, setFormData] = useState<{ name: string, description: string, members: Member[]}>({
         name: "",
@@ -35,7 +39,6 @@ export default function NewProjectModal({ disclosure }: { disclosure: ReturnType
                 }]
             }));
         }
-
         insertSelf();
     }, []);
 
@@ -92,6 +95,9 @@ export default function NewProjectModal({ disclosure }: { disclosure: ReturnType
         const response = await createProject(prevState, form);
         if (response.success) {
             disclosure.onClose();
+            toast("Project created successfully", "success");
+        } else {
+            toast(response.message || "An error occurred while creating the project", "error");
         }
         return response;
     }, undefined)

@@ -1,13 +1,16 @@
 'use client'
 
-import { ThemeProvider} from "@/contexts/themeContext";
+import { ThemeProvider } from "@/contexts/themeContext";
+import { ToastProvider } from "@/contexts/toastContext";
 
 export default function Providers({ children }: Readonly<{ children: React.ReactNode }>) {
 
   return (
     <ThemeProvider>
       <body className="min-h-svh">
-        {children}
+        <ToastProvider>
+          {children}
+        </ToastProvider>
       </body>
     </ThemeProvider>
   );

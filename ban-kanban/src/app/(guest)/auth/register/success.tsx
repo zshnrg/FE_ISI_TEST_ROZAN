@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation";
+import { useToast } from "@/contexts/toastContext";
 
 import { MdOutlineContentCopy, MdOutlineInfo } from "react-icons/md";
 import { Button } from "@/components/ui/buttton";
@@ -11,6 +12,7 @@ import { getSelf } from "@/lib/actions/user";
 
 export default function SuccessCode() {
 
+    const { toast } = useToast()
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
 
@@ -22,13 +24,20 @@ export default function SuccessCode() {
         fetchUser();
     }, []);
 
+    const handleCopyCode = () => {
+        if (!user?.user_code) return;
+
+        navigator.clipboard.writeText(user.user_code);
+        toast("Copied to clipboard", "success");
+    }
+
     return user?.user_code ? (
         <div className="flex flex-col gap-6">
             <p className="text-gray-500">Welcome to Bankanban {user?.user_full_name}!. The code below is your PersonalID. Share this code with your Lead and join the team.</p>
             <div className="flex flex-col gap-4">
                 <div
                     className="py-4 px-6 bg-neutral-100 dark:bg-neutral-700/20 hover:bg-neutral-200 dark:hover:bg-neutral-700/20  rounded-full flex items-center justify-between gap-4 w-full transition-colors"
-                    onClick={() => navigator.clipboard.writeText(user?.user_code)}
+                    onClick={handleCopyCode}
                 >
                     <span className="text-md font-bold text-neutral-600 dark:text-neutral-200">{user.user_code}</span>
                     <MdOutlineContentCopy className="text-neutral-600 dark:text-neutral-200" />
