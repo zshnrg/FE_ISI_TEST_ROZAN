@@ -6,7 +6,6 @@ export interface Project {
     project_created_at: string;
 }
 
-
 export const projectDummy: Project[] = [
     {
         project_id: 1,
