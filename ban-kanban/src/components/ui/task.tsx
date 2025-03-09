@@ -68,7 +68,22 @@ export default function Task({
                     </div>
                 )}
 
+                <div className="flex gap-2 items-center justify-between mt-2">
+                    <span className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+                        {formatDate(task.task_start_date)} - {formatDate(task.task_end_date)}
+                    </span>
+                    <span className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+                        {Math.floor((new Date(task.task_end_date).getTime() - new Date(task.task_start_date).getTime()) / (1000 * 60 * 60 * 24))}d
+                    </span>
+                </div>
             </div>
         </div>
     )
+}
+
+const formatDate = (date: Date | string) => {
+    return new Date(date).toLocaleString("en-US", {
+        day: "numeric",
+        month: "short",
+    });
 }
