@@ -31,7 +31,7 @@ export const TaskFormSchema = z.object({
             user_color: z.string(),
             user_role: z.string(),
         }))
-        .length(1, "Assignee is required")
+        .min(1, "Assignee is required")
 });
 
 export type TaskFormState = {

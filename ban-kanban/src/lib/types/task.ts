@@ -1,4 +1,4 @@
-import { User } from "./auth";
+import { Member } from "./user";
 
 export interface Task {
     task_id: number;
@@ -13,7 +13,7 @@ export interface Task {
 };
 
 export interface AssignedTask extends Task {
-    assigned_user: User[]
+    assigned_user: Member[]
     project_name: string;
 }
 
@@ -35,7 +35,7 @@ export const assignedTaskDummy: AssignedTask[] = [
           user_email: "test@mail.com",
           user_full_name: "Test User",
           user_color: "#1A1A1A",
-          user_code: "A1B2C3D4"
+          user_role: "member"
         }
       ]
     },
@@ -56,49 +56,49 @@ export const assignedTaskDummy: AssignedTask[] = [
           user_email: "designer@mail.com",
           user_full_name: "UI Designer",
           user_color: "#2C2C2C",
-          user_code: "E5F6G7H8"
+          user_role: "member"
         },
         {
           user_id: "7c3a8e64-1234-4c9f-9b5f-a2c3e1234567",
           user_email: "designer@mail.com",
           user_full_name: "UI Designer",
           user_color: "#2C2C2C",
-          user_code: "E5F6G7H8"
+          user_role: "member"
         },
         {
           user_id: "7c3a8e64-1234-4c9f-9b5f-asdasdwqeeqd",
           user_email: "designer@mail.com",
           user_full_name: "UI Designer",
           user_color: "#2C2C2C",
-          user_code: "E5F6G7H8"
+          user_role: "member"
         },
         {
           user_id: "7c3a8e64-asdw-4c9f-9b5f-a2c3e1234567",
           user_email: "designer@mail.com",
           user_full_name: "UI Designer",
           user_color: "#2C2C2C",
-          user_code: "E5F6G7H8"
+          user_role: "member"
         },
         {
           user_id: "7c3a8e64-12qwe4c9f-9b5f-a2c3e1234567",
           user_email: "designer@mail.com",
           user_full_name: "UI Designer",
           user_color: "#2C2C2C",
-          user_code: "E5F6G7H8"
+          user_role: "member"
         },
         {
           user_id: "7c3a8e64-1234-4c9f-9b5f-a2qwe1234567",
           user_email: "designer@mail.com",
           user_full_name: "UI Designer",
           user_color: "#2C2C2C",
-          user_code: "E5F6G7H8"
+          user_role: "member"
         },
         {
           "user_id": "d1a2b3c4-d5e6-7f8g-9h0i-j1k2l3m4n5o6",
           "user_email": "ux@mail.com",
           "user_full_name": "UX Specialist",
           "user_color": "#3C3C3C",
-          "user_code": "I9J0K1L2"
+          user_role: "member"
         }
       ]
     },
@@ -119,7 +119,7 @@ export const assignedTaskDummy: AssignedTask[] = [
           user_email: "developer@mail.com",
           user_full_name: "Backend Developer",
           user_color: "#4E4E4E",
-          user_code: "M3N4O5P6"
+          user_role: "member"
         }
       ]
     },
@@ -140,14 +140,14 @@ export const assignedTaskDummy: AssignedTask[] = [
           user_email: "docwriter@mail.com",
           user_full_name: "Documentation Writer",
           user_color: "#5F5F5F",
-          user_code: "Q7R8S9T0"
+          user_role: "member"
         },
         {
           "user_id": "z1x2c3v4-b5n6-m7l8-k9j0-h1g2f3d4s5a6",
           "user_email": "techlead@mail.com",
           "user_full_name": "Tech Lead",
           "user_color": "#6A6A6A",
-          "user_code": "U1V2W3X4"
+          user_role: "member"
         }
       ]
     }

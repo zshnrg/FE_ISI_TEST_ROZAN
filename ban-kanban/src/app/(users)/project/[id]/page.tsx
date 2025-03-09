@@ -29,6 +29,8 @@ export default function Kanban() {
     }, 500);
 
     const newTask = useDisclosure();
+    const editTask = useDisclosure();
+    const detailTask = useDisclosure();
 
     return (
         <div className="flex flex-col p-12 gap-6 min-h-full w-full">
@@ -52,7 +54,7 @@ export default function Kanban() {
                 </Button>
             </div>
 
-            <KanbanBoard />
+            <KanbanBoard onDetail={(detailTask.onOpen)} onEdit={editTask.onOpen} />
 
             <NewTasktModal disclosure={newTask} />
         </div>
