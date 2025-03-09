@@ -4,15 +4,17 @@ import { MdClose } from "react-icons/md"
 
 export function MemberItem({
     member,
-    showRemove,
-    onRemove,
+    showRemove = false,
+    onRemove = () => { },
+    onClick = () => { }
 } : {
     member: Member
-    showRemove: boolean
-    onRemove: (userId: string) => void
+    showRemove?: boolean
+    onRemove?: (userId: string) => void
+    onClick?: () => void
 }) {
     return (
-        <div key={member.user_id} className="flex items-center justify-between mx-8">
+        <div key={member.user_id} className="flex items-center justify-between mx-8" onClick={onClick} >
             <div className="flex items-center gap-4">
                 <UserProfileImage full_name={member.user_full_name} size={36} bgColor={member.user_color} />
                 <div className="flex flex-col leading-3">
