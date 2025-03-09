@@ -10,12 +10,13 @@ import { MdAdd, MdSearch } from "react-icons/md";
 import { Button } from "@/components/ui/buttton";
 
 import KanbanBoard from "./kanban";
-import NewTasktModal from "./new-task-modal"
+import NewTaskModal from "./new-task-modal"
 ;
 import { Member } from "@/lib/types/user";
 import { getSelf } from "@/lib/actions/user";
 import { getMember } from "@/lib/actions/member";
 import { useEffect, useState } from "react";
+import EditTaskModal from "./edit-task-modal";
 
 export default function Kanban() {
 
@@ -92,7 +93,8 @@ export default function Kanban() {
 
             <KanbanBoard onDetail={(detailTask.onOpen)} onEdit={editTask.onOpen} />
 
-            <NewTasktModal disclosure={newTask} />
+            <NewTaskModal disclosure={newTask} />
+            <EditTaskModal disclosure={editTask} />
         </div>
     );
 }
