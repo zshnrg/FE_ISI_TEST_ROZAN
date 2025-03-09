@@ -108,7 +108,7 @@ export const assignedTaskDummy: AssignedTask[] = [
       task_description: "Develop the backend APIs for the project",
       task_start_date: new Date(),
       task_end_date: new Date(),
-      task_status: "Done",
+      task_status: "Not Started",
       task_color: "#4D4D4D",
       task_created_at: new Date(),
       project_id: 1,

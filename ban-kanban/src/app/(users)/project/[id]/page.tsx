@@ -9,6 +9,7 @@ import { MdAdd, MdSearch } from "react-icons/md";
 import { Button } from "@/components/ui/buttton";
 
 import KanbanBoard from "./kanban";
+import NewTasktModal from "./new-task-form";
 
 export default function Kanban() {
 
@@ -52,6 +53,8 @@ export default function Kanban() {
             </div>
 
             <KanbanBoard />
+
+            <NewTasktModal disclosure={newTask} />
         </div>
     );
 }
