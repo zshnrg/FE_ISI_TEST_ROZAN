@@ -95,7 +95,7 @@ export default function KanbanBoard({
         const isColumn = over?.data.current?.type === "column"
         const overStatus: string = isColumn ? over.data.current?.status : over?.data.current?.task.task_status;
 
-        await updateTaskStatus(activeTask.task_id, overStatus)
+        await updateTaskStatus(parseInt(id), activeTask.task_id, overStatus)
             .then(() => {
                 revalidateTags("tasks");
             })

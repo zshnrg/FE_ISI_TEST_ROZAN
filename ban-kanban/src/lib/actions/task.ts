@@ -155,8 +155,9 @@ export async function editTask(
     } else {
         // 4. Create members
         const currentAssignee = await query(
-            `SELECT user_id
+            `SELECT users.user_id, user_full_name
                 FROM task_assignee
+                    LEFT JOIN users ON task_assignee.user_id = users.user_id
                 WHERE task_id = $1`,
             [task_id]
         );
@@ -368,13 +369,27 @@ export async function getTask(task_id: number, project_id: number) {
  * @param status - The new status of the task.
  * @returns A promise that resolves to the updated task information.
  */
-export async function updateTaskStatus(task_id: number, status: string) {
+export async function updateTaskStatus(project_id: number, task_id: number, status: string) {
+
     const { rows: task } = await query(
         `UPDATE tasks
             SET task_status = $1
             WHERE task_id = $2
             RETURNING task_id, task_name`,
         [status, task_id]
+    );
+
+    if (task.length === 0) {
+        return {
+            message: "An error occurred while updating the task status.",
+            success: false
+        };
+    }
+
+    await createLogs(
+        [`Task ${task[0].task_name} status changed to ${status}`],
+        project_id,
+        task_id,
     );
 
     return task[0] as { task_id: number, task_name: string };
