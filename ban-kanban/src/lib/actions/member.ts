@@ -79,3 +79,22 @@ export async function getMembers(project_id: number) {
 
     return members as Member[];
 }
+
+/**
+ * Gets a member of a project.
+ *
+ * @param project_id - The ID of the project.
+ * @param user_id - The ID of the user.
+ * @returns A Promise that resolves to a member row.
+ */
+export async function getMember(project_id: number, user_id: string) {
+    const { rows: members } = await query(
+        `SELECT users.user_id as user_id, user_full_name, user_email, user_color, member_role as user_role
+            FROM project_members
+            JOIN users ON project_members.user_id = users.user_id
+            WHERE project_id = $1 AND users.user_id = $2`,
+        [project_id, user_id]
+    );
+
+    return members[0] as Member;
+}
