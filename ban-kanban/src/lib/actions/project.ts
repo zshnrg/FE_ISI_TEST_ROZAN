@@ -85,6 +85,13 @@ export async function createProject(
     };
 }
 
+/**
+ * Edits a project with the provided form data.
+ * @param state - The current state of the project form.
+ * @param formData - The form data to update the project with.
+ * @param projectId - The ID of the project to edit.
+ * @returns An object with the result of the edit operation.
+ */
 export async function editProject(
     state: ProjectFormState,
     formData: FormData,
@@ -154,6 +161,13 @@ export async function editProject(
     };
 }
 
+/**
+ * Retrieves projects based on the search query, limit, and offset.
+ * @param search - The search query to filter projects by.
+ * @param limit - The maximum number of projects to retrieve. Default is 12.
+ * @param offset - The number of projects to skip. Default is 0.
+ * @returns An array of projects that match the search query.
+ */
 export async function getProjects(
     search: string,
     limit: number = 12,
@@ -170,6 +184,7 @@ export async function getProjects(
             LEFT JOIN project_members ON projects.project_id = project_members.project_id
             WHERE project_members.user_id = $1
                 AND LOWER(project_name) LIKE LOWER($2)
+            ORDER BY project_name
             LIMIT $3 OFFSET $4`,
         [user_id, `%${search}%`, limit, offset]
     );

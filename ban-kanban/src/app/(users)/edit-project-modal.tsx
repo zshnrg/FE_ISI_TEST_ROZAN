@@ -270,7 +270,7 @@ const EditForm = ({
                 <Button buttonType="secondary" type="button" onClick={onClose}>
                     Discard
                 </Button>
-                <Button buttonType="primary" className="w-full">
+                <Button disabled={pending} buttonType="primary" className="w-full">
                     Save
                 </Button>
             </div>
