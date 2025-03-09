@@ -1,15 +1,15 @@
-import { Project } from "@/lib/types/project";
+import { UserProject } from "@/lib/types/project";
 
-import { MdOutlineEditNote, MdArrowForwardIos } from "react-icons/md";
+import { MdOutlineEditNote, MdArrowForwardIos, MdOutlineViewHeadline } from "react-icons/md";
 
 export default function ProjectCard({
     project,
     onEdit,
     onClick,
 }: {
-    project: Project
-    onEdit: (project: Project) => void
-    onClick: (project: Project) => void
+    project: UserProject
+    onEdit: (project: UserProject) => void
+    onClick: (project: UserProject) => void
 }) {
 
     return (
@@ -30,7 +30,9 @@ export default function ProjectCard({
                         onClick={() => onEdit(project)}
                         className="cursor-pointer text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-50"
                     >
-                        <MdOutlineEditNote />
+                        {
+                            project.member_role === "member" ? <MdOutlineViewHeadline /> :  <MdOutlineEditNote />
+                        }
                     </button>
                     <button
                         onClick={() => onClick(project)}

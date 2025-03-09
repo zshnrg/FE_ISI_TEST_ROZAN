@@ -1,7 +1,7 @@
 'use client'
 
 import ProjectCard from "@/components/ui/project";
-import { Project } from "@/lib/types/project";
+import { UserProject } from "@/lib/types/project";
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
@@ -15,8 +15,8 @@ export default function ProjectList({
     onProjectClick,
     onProjectEdit
 }: {
-    onProjectClick: (project: Project) => void
-    onProjectEdit: (project: Project) => void
+    onProjectClick: (project: UserProject) => void
+    onProjectEdit: (project: UserProject) => void
 }) {
 
     const projectRevalidate = useRevalidateTag("projects");
@@ -24,7 +24,7 @@ export default function ProjectList({
     const [loading, setLoading] = useState(true);
     const [showLoadMore, setShowLoadMore] = useState(false);
     const [offset, setOffset] = useState(0);
-    const [data, setData] = useState<Project[]>([]);
+    const [data, setData] = useState<UserProject[]>([]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -38,7 +38,6 @@ export default function ProjectList({
                 0
             )
                 .then((data) => {
-                    console.log(data);
                     setData(data);
                     setShowLoadMore(data.length === NUM_PROJECTS);
                     setOffset(NUM_PROJECTS);

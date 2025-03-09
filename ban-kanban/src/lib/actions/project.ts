@@ -1,10 +1,13 @@
 'use server'
 
 import { query } from "@/lib/services/db";
-import { NewProjectFormState, ProjectFormSchema } from "@/lib/definitions/project";
+
 import { Member } from "@/lib/types/user";
-import { createLogs } from "./logger";
+import { ProjectFormState, ProjectFormSchema } from "@/lib/definitions/project";
+
 import { getSelf } from "./user";
+import { createLogs } from "./logger";
+import { createMembers, deleteMembers, getMembers } from "./member";
 
 /**
  * Creates a new project.
@@ -14,7 +17,7 @@ import { getSelf } from "./user";
  */
 
 export async function createProject(
-    state: NewProjectFormState,
+    state: ProjectFormState,
     formData: FormData
 ) {
 
@@ -55,16 +58,8 @@ export async function createProject(
         message: "Project created successfully, but no members were added.",
         success: true
     }
-
-    const memberValues = members.map(
-        (member: Member) => `(${project_id}, '${member.user_id}', '${member.user_role}')`
-    ).join(", ");
-
-    const { rows: memberRows } = await query(
-        `INSERT INTO project_members (project_id, user_id, member_role)
-            VALUES ${memberValues}
-            RETURNING project_id, user_id, member_role`
-    );
+    
+    const memberRows = await createMembers(members, project_id);
 
     if (memberRows.length === 0) {
         return {
@@ -91,11 +86,72 @@ export async function createProject(
 }
 
 export async function editProject(
-    state: NewProjectFormState,
+    state: ProjectFormState,
     formData: FormData,
-    projectId: string
+    projectId: number
 ) {
-    return
+    
+    // 1. Validate the form data
+    const validationResult = ProjectFormSchema.safeParse({
+        name: formData.get("name"),
+        description: formData.get("description"),
+        members: JSON.parse(formData.get("members") as string)
+    });
+
+    if (!validationResult.success) {
+        return {
+            errors: validationResult.error.flatten().fieldErrors
+        };
+    }
+
+    // 2. Update the project
+    const { name, description, members } = validationResult.data;
+
+    const { rows: projectRow } = await query(
+        `UPDATE projects
+            SET project_name = $1, project_description = $2
+            WHERE project_id = $3
+            RETURNING project_id, project_name, project_description`,
+        [name, description, projectId]
+    );
+
+    if (projectRow.length === 0) {
+        return {
+            message: "An error occurred while updating the project.",
+            success: false
+        };
+    }
+
+    // 3. Update members
+    const currentMembers = (await getMembers(projectId))
+
+    const membersToRemove = currentMembers.filter((member) => !members.find((newMember) => newMember.user_id === member.user_id));
+    const membersToAdd = members.filter((member) => !currentMembers.find((currentMember) => currentMember.user_id === member.user_id));
+
+    if (membersToRemove.length > 0) {
+        await deleteMembers(membersToRemove.map((member) => member.user_id), projectId);
+    }
+    if (membersToAdd.length > 0) {
+        await createMembers(membersToAdd, projectId);
+    }
+
+    await createLogs(
+        [
+            `Project ${name} updated`,
+            ...membersToAdd.map(
+                (member: Member) => `User ${member.user_full_name} added as ${member.user_role}`
+            ),
+            ...membersToRemove.map(
+                (member: Member) => `User ${member.user_full_name} removed`
+            )
+        ],
+        projectId
+    )
+
+    return {
+        message: "Project updated successfully.",
+        success: true
+    };
 }
 
 export async function getProjects(

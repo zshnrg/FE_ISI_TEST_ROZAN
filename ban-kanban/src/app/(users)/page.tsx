@@ -8,7 +8,7 @@ import NewProjectModal from "./new-project-modal";
 import EditProjectModal from "./edit-project-modal";
 
 import ProjectList from "./project-list";
-import { Project } from "@/lib/types/project";
+import { UserProject } from "@/lib/types/project";
 
 import { useDisclosure } from "@/hooks/useDisclosure";
 import { useState } from "react";
@@ -20,10 +20,9 @@ export default function Home() {
     const router = useRouter();
     const pathName = usePathname();
     const searchParams = useSearchParams();
-    const [focusedProject, setFocusedProject] = useState<Project | null>(null);
+    const [focusedProject, setFocusedProject] = useState<UserProject |  null>(null);
 
     const handleChage = useDebouncedCallback((term: string) => {
-        console.log(term);
         const params = new URLSearchParams(searchParams);
 
         if (term) {
@@ -67,7 +66,7 @@ export default function Home() {
             />
 
             <NewProjectModal disclosure={newProjectModal} />
-            <EditProjectModal disclosure={editProjectModal} data={focusedProject} />
+            <EditProjectModal disclosure={editProjectModal} data={focusedProject} setData={setFocusedProject}/>
         </div>
     );
 }
