@@ -102,7 +102,7 @@ export default function SideBar() {
                             }
                             {
                                 loading && Array.from({ length: SHOW_PROJECTS }).map((_, i) => (
-                                    <div key={i} className="animate-pulse h-6 bg-neutral-100 dark:bg-neutral-800/50 rounded-2xl overflow-hidden">
+                                    <div key={i} className="animate-pulse h-6 bg-neutral-200 dark:bg-neutral-800 rounded-2xl overflow-hidden">
                                     </div>
                                 ))
                             }

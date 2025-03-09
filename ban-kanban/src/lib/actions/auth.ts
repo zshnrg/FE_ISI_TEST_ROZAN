@@ -85,8 +85,6 @@ export async function login (
         [email]
     );
 
-    console.log(rows);
-
     if (rows.length === 0) {
         return {
             message: "Invalid email or password."
