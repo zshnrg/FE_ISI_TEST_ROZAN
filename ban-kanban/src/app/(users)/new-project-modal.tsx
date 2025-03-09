@@ -12,7 +12,7 @@ import { useToast } from "@/contexts/toastContext";
 import { useTriggerRevalidate } from "@/contexts/revalidateContext";
 
 import { Member } from "@/lib/types/user";
-import { NewProjectFormState } from "@/lib/definitions/project";
+import { ProjectFormState } from "@/lib/definitions/project";
 import { createProject } from "@/lib/actions/project";
 import { getSelf, getUserByCode } from "@/lib/actions/user";
 
@@ -93,7 +93,7 @@ export default function NewProjectModal({ disclosure }: { disclosure: ReturnType
     }
 
     // 3. Form data action
-    const [state, action, pending] = useActionState(async (prevState: NewProjectFormState, form: FormData) => {
+    const [state, action, pending] = useActionState(async (prevState: ProjectFormState, form: FormData) => {
         form.delete("user_code");
         form.append("members", JSON.stringify(formData.members));
         const response = await createProject(prevState, form);
@@ -102,6 +102,7 @@ export default function NewProjectModal({ disclosure }: { disclosure: ReturnType
             toast("Project created successfully", "success");
             revalidateTags("projects");
         } else {
+            if (response.errors) return response;
             toast(response.message || "An error occurred while creating the project", "error");
         }
         return response;

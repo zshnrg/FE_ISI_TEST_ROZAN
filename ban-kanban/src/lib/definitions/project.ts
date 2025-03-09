@@ -21,7 +21,7 @@ export const ProjectFormSchema = z.object({
         }))
 });
 
-export type NewProjectFormState = {
+export type ProjectFormState = {
     errors?: {
         name?: string[];
         description?: string[];
