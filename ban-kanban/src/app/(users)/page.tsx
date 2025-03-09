@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/buttton";
 import { Input } from "@/components/ui/input";
-import { MdAdd } from "react-icons/md";
+import { MdAdd, MdSearch } from "react-icons/md";
 
 import NewProjectModal from "./new-project-modal";
 import EditProjectModal from "./edit-project-modal";
@@ -37,7 +37,7 @@ export default function Home() {
     const editProjectModal = useDisclosure();
 
     return (
-        <div className="flex flex-col p-12 gap-6">
+        <div className="flex flex-col p-12 gap-6 min-h-full w-full">
             <div className="flex gap-6">
                 <Input 
                     id="search" 
@@ -46,6 +46,7 @@ export default function Home() {
                     className="w-full"
                     defaultValue={searchParams.get("search")?.toString()}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChage(e.target.value)}
+                    leadingIcon={<MdSearch/>}
                 />
                 <Button 
                     onClick={newProjectModal.onOpen}
