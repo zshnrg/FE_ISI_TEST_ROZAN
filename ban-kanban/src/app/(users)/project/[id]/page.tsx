@@ -1,14 +1,57 @@
 'use client'
 
-import { useParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useDebouncedCallback } from "use-debounce";
+import { useDisclosure } from "@/hooks/useDisclosure";
 
-export default function Project() {
+import { Input } from "@/components/ui/input";
+import { MdAdd, MdSearch } from "react-icons/md";
+import { Button } from "@/components/ui/buttton";
 
-    const { id } = useParams<{ id: string }>();
+import KanbanBoard from "./kanban";
+
+export default function Kanban() {
+
+    const router = useRouter();
+    const pathName = usePathname();
+    const searchParams = useSearchParams();
+
+    const handleChage = useDebouncedCallback((term: string) => {
+        const params = new URLSearchParams(searchParams);
+
+        if (term) {
+            params.set("search", term);
+        } else {
+            params.delete("search");
+        }
+        router.replace(`${pathName}?${params.toString()}`);
+    }, 500);
+
+    const newTask = useDisclosure();
 
     return (
-        <div>
-            Project {id}
+        <div className="flex flex-col p-12 gap-6 min-h-full w-full">
+            <div className="flex gap-6 w-full">
+                <Input 
+                    id="search" 
+                    type="text" 
+                    placeholder="Search task" 
+                    className="w-full"
+                    defaultValue={searchParams.get("search")?.toString()}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChage(e.target.value)}
+                    leadingIcon={<MdSearch/>}
+                />
+                <Button 
+                    onClick={newTask.onOpen}
+                    buttonType="primary"
+                    className="flex items-center gap-2 shrink-0"
+                >
+                    <span className="hidden md:block">Add Task</span>
+                    <MdAdd/>
+                </Button>
+            </div>
+
+            <KanbanBoard />
         </div>
     );
 }
