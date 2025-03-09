@@ -1,106 +1,144 @@
 'use client'
 
 import { Button } from "@/components/ui/buttton";
-import { Input, TextArea } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
-import { MdClose } from "react-icons/md";
-import { MemberItem } from "@/components/ui/member";
 
 import { useDisclosure } from "@/hooks/useDisclosure";
-import { useActionState, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useToast } from "@/contexts/toastContext";
-import { useParams } from "next/navigation";
+import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { Member } from "@/lib/types/user";
 import { Loading } from "@/components/ui/loading";
-import { getMembers } from "@/lib/actions/member";
+import { getTask } from "@/lib/actions/task";
+import { UserProfileImage } from "@/components/ui/profile";
 
 
-export default function NewTasktModal({ disclosure }: { disclosure: ReturnType<typeof useDisclosure> }) {
-    
-    return loading ? (<Loading/>) : (
+type TaskData = {
+    name: string;
+    description: string;
+    start_date: string;
+    end_date: string;
+    status: string;
+    color: string;
+    assignee: Member[];
+}
+
+export default function DetailTaskModal({ disclosure }: { disclosure: ReturnType<typeof useDisclosure> }) {
+
+    const { toast } = useToast();
+
+    const { id } = useParams<{ id: string }>();
+    const router = useRouter();
+    const pathName = usePathname();
+    const searchParams = useSearchParams();
+    const taskId = searchParams.get("task");
+
+
+    const [loading, setLoading] = useState(true);
+    const [taskData, setTaskData] = useState<TaskData>({
+        name: "",
+        description: "",
+        start_date: "",
+        end_date: "",
+        status: "",
+        color: "",
+        assignee: []
+    });
+
+    useEffect(() => {
+        async function fetchTask() {
+            setLoading(true);
+            if (!taskId) return;
+
+            await getTask(parseInt(id), parseInt(taskId))
+                .then((data) => {
+                    setTaskData({
+                        name: data.task_name,
+                        description: data.task_description,
+                        start_date: new Date(data.task_start_date).toLocaleString('sv-SE', { timeZone: 'Asia/Jakarta' }).slice(0, 16),
+                        end_date: new Date(data.task_end_date).toLocaleString('sv-SE', { timeZone: 'Asia/Jakarta' }).slice(0, 16),
+                        status: data.task_status,
+                        color: data.task_color,
+                        assignee: data.assigned_user
+                    });
+                })
+                .catch((error) => {
+                    toast(error.message, "error");
+                })
+                .finally(() => {
+                    setLoading(false);
+                });
+        }
+        fetchTask();
+    }, [id, taskId, toast]);
+
+    // 4. On form submit
+    const onClose = () => {
+        const params = new URLSearchParams(searchParams);
+
+        params.delete("task");
+        router.replace(`${pathName}?${params.toString()}`);
+
+        disclosure.onClose();
+    }
+
+    return (
         <Modal
-            {...disclosure}
-            title="Create a new project"
+            isOpen={disclosure.isOpen}
+            onOpenChange={onClose}
+            title="Task Detail"
             size="xl"
         >
-        <div className="flex flex-col gap-4">
-            <div className="flex items-center justify-between gap-4">
-                <h4 className="text-lg font-semibold text-neutral-900 dark:text-neutral-50">{project.project_name}</h4>
-                
-                <span className={`text-xs text-neutral-50   ${project.project_status ? "bg-green-500 dark:text-neutral-900" : "bg-neutral-400 dark:bg-neutral-500"} px-2 py-1 rounded-full`}>
-                    {project.project_status ? "Active" : "Inactive"}
-                </span>
-            </div>
-                
-                {/* Description */}
-                <TextArea
-                    className="min-h-24"
-                    id="description" name="description" type="text"
-                    placeholder="Project description"
-                />
+            {loading ? <Loading /> : (
+                <div className="flex flex-col gap-4">
+                    <div className="flex items-center justify-between gap-4">
+                        <h4 className="text-lg font-semibold text-neutral-900 dark:text-neutral-50">{taskData.name}</h4>
 
-                <hr className="border-t border-2 border-neutral-200 dark:border-neutral-700 mx-4" />
+                        <span className={`text-xs text-neutral-50   ${taskData.status === "Not Started"
+                            ? "bg-neutral-400"
+                            : taskData.status === "On Progress"
+                                ? "bg-yellow-500"
+                                : taskData.status === "Done"
+                                    ? "bg-green-500"
+                                    : "bg-red-500"
+                            } px-2 py-1 rounded-full`}>
+                            {taskData.status}
+                        </span>
+                    </div>
+                    <p className="text-sm text-neutral-500 dark:text-neutral-400">{taskData.description ? taskData.description : "No description"}</p>
 
-                {/* members */}
-                <div className="relative py-4 px-6 bg-neutral-100 dark:bg-neutral-700/20 rounded-4xl has-focus:ring-2 has-focus:ring-indigo-900 has-focus:ring-opacity-50 flex flex-wrap items-center gap-4">
-                    {
-                        formData.assigned_user.length > 0 && (
-                            formData.assigned_user.map((user) => (
-                                <div className="flex w-fit gap-2 p-2 bg-neutral-50 rounded-lg text-md text-neutral-800 dark:text-neutral-200" key={user.user_id}>
-                                    {user.user_full_name}
-                                    <MdClose onClick={() => handleRemoveMember(user.user_id)} className="cursor-pointer"/>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="text-sm font-medium text-neutral-500 dark:text-neutral-400">Start Date</label>
+                            <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-50">{taskData.start_date}</p>
+                        </div>
+                        <div>
+                            <label className="text-sm font-medium text-neutral-500 dark:text-neutral-400">End Date</label>
+                            <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-50">{taskData.end_date}</p>
+                        </div>
+
+                    </div>
+
+                    <hr className="border-t border-neutral-200 dark:border-neutral-700 my-4" />
+
+                    <div className="flex flex-col gap-2 my-4">
+                        <h5 className="text-md font-semibold text-neutral-900 dark:text-neutral-50 mb-2">Members</h5>
+                        {
+                            taskData.assignee.map(member => (
+                                <div key={member.user_id} className="flex items-center gap-4">
+                                    <UserProfileImage full_name={member.user_full_name} size={36} bgColor={member.user_color} />
+                                    <p className="text-md font-semibold text-neutral-900 dark:text-neutral-50">{member.user_full_name}</p>
                                 </div>
                             ))
-                        )
-                    }
-                    <input
-                        className="focus:outline-none w-full text-md text-neutral-800 dark:text-neutral-200"
-                        type="text"
-                        placeholder="Search member to assign"
-                        value={searchMember}
-                        onChange={(e) => setSearchMember(e.target.value)}
-                    />
-                        <div hidden={filtermembers.length === 0} className="absolute top-16 inset-x-0 w-full space-y-4 py-4 bg-neutral-100 shadow-xl dark:bg-neutral-800 rounded-xl max-h-48 overflow-y-auto">
-                            {
-                                filtermembers.map((member) => (
-                                    <MemberItem
-                                        key={member.user_id}
-                                        member={member}
-                                        onClick={() => handlePickMember(member.user_id)}
-                                    />
-                                ))
-                            }
-                        </div>
-                </div>
+                        }
+                    </div>
 
-                {/* Start and End Date */}
-                <div className="flex gap-4 items-center">
-                    <Input
-                        id="start_date" name="start_date" type="datetime-local"
-                        defaultValue={new Date().toISOString().substring(0, 11).concat("08:00")}
-                        placeholder="Start Date" className="w-full text-sm"
-                    />
-                    <div className="w-4 h-1 bg-neutral-300 dark:bg-neutral-500 rounded-full shrink-0"></div>
-                    <Input
-                        id="end_date" name="end_date" type="datetime-local"
-                        defaultValue={new Date(new Date().setDate(new Date().getDate() + 7)).toISOString().substring(0, 11).concat("08:00")}
-                        placeholder="End Date" className="w-full text-sm"
-                    />
-                </div>
-
-                <div className="flex flex-col-reverse md:flex-row gap-4 mt-12">
-                    <Button buttonType="secondary" type="button" onClick={disclosure.onClose}>
-                        Cancel
-                    </Button>
-                    <Button 
-                        buttonType="primary" className="w-full"
-                    >
-                        Create
+                    <Button buttonType="secondary" onClick={onClose}>
+                        Close
                     </Button>
                 </div>
-
-            </div>
+            )}
         </Modal>
     );
 }

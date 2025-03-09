@@ -287,7 +287,7 @@ function TaskCard({
             type: "task",
             task,
         },
-        disabled: task.assigned_user.every((u) => u.user_id === user?.user_id) && user?.user_role === "member"
+        disabled: task.assigned_user.every((u) => u.user_id !== user?.user_id) && user?.user_role === "member"
     });
 
     const style = {

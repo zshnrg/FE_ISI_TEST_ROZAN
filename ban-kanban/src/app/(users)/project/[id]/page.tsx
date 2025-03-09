@@ -17,6 +17,7 @@ import { getSelf } from "@/lib/actions/user";
 import { getMember } from "@/lib/actions/member";
 import { useEffect, useState } from "react";
 import EditTaskModal from "./edit-task-modal";
+import DetailTaskModal from "./detail-modal";
 
 export default function Kanban() {
 
@@ -95,6 +96,7 @@ export default function Kanban() {
 
             <NewTaskModal disclosure={newTask} />
             <EditTaskModal disclosure={editTask} />
+            <DetailTaskModal disclosure={detailTask} />
         </div>
     );
 }
