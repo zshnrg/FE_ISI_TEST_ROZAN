@@ -8,5 +8,5 @@ export const pool = new Pool({
     port: parseInt(process.env.DB_PORT || "5432"),
 });
 
-export const query = (text: string, params: unknown[]) => 
+export const query = (text: string, params: unknown[] = []) => 
     pool.query(text, params);
