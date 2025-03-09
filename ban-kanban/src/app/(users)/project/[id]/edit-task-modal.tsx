@@ -65,12 +65,11 @@ export default function EditTaskModal({ disclosure }: { disclosure: ReturnType<t
 
             await getTask(parseInt(id), parseInt(taskId))
                 .then((data) => {
-                    console.log(data);
                     setFormData({
                         name: data.task_name,
                         description: data.task_description,
-                        start_date: new Date(data.task_start_date).toISOString().substring(0, 16),
-                        end_date: new Date(data.task_end_date).toISOString().substring(0, 16),
+                        start_date: new Date(data.task_start_date).toLocaleString('sv-SE', { timeZone: 'Asia/Jakarta' }).slice(0, 16),
+                        end_date: new Date(data.task_end_date).toLocaleString('sv-SE', { timeZone: 'Asia/Jakarta' }).slice(0, 16),
                         status: data.task_status,
                         color: data.task_color,
                         assignee: data.assigned_user
