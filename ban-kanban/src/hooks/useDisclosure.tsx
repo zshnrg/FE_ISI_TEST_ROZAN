@@ -4,8 +4,6 @@ export function useDisclosure() {
     const [isOpen, setIsOpen] = useState(false)
     const [isDisabled, setIsDisabled] = useState(false)
 
-    console.log(isOpen)
-
     const onOpen = useCallback(() => setIsOpen(true), [])
     const onClose = useCallback(() => setIsOpen(false), [])
     const onOpenChange = useCallback(() => {

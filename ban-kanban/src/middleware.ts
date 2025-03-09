@@ -11,9 +11,6 @@ const publicRoutes = ["/auth/login", "/auth/register"];
 export default async function middleware(req: NextRequest) {
     const { pathname, searchParams } = req.nextUrl;
 
-    console.log("Path:", pathname);
-    console.log("Search Params:", searchParams.toString());
-
     const cookie = (await cookies()).get("session")?.value;
     const session = await decrypt(cookie);
 

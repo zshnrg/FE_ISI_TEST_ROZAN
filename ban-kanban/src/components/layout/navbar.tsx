@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useTheme } from "@/contexts/themeContext";
+import { useToast } from "@/contexts/toastContext";
 
 import Image from "next/image";
 import { MdOutlineArrowForwardIos, MdOutlineBedtime, MdOutlineBrightness5, MdOutlineContentCopy, MdOutlineLogout, MdOutlineMenu, MdOutlineNotifications } from "react-icons/md";
@@ -52,6 +53,7 @@ export default function Navbar() {
 const Dropdown = () => {
 
     const [user, setUser] = useState<User | null>(null);
+    const { toast } = useToast();
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -87,7 +89,10 @@ const Dropdown = () => {
                             <h3 className="text-md font-semibold text-neutral-900 dark:text-neutral-50">{user.user_full_name}</h3>
                             <p className="text-xs text-neutral-500 dark:text-neutral-400">{user.user_email}</p>
                             <div
-                                onClick={() => navigator.clipboard.writeText(user.user_code)}
+                                onClick={() => {
+                                    navigator.clipboard.writeText(user.user_code);
+                                    toast("User code copied to clipboard", "success");
+                                }}
                                 className="flex bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-200/70 dark:hover:bg-neutral-600/50 items-center gap-2 p-1 w-fit rounded-lg mt-1"
                             >
                                 <MdOutlineContentCopy className="text-neutral-500 dark:text-neutral-400" size={12} />

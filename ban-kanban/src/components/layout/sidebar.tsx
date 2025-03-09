@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { useRevalidateTag } from "@/contexts/revalidateContext";
 
-import { Project, projectDummy } from "@/lib/types/project";
+import { Project } from "@/lib/types/project";
+import { getProjects } from "@/lib/actions/project";
 
 import { MdOutlineDragIndicator } from "react-icons/md";
 import { AnimatePresence, motion } from "motion/react";
+
+const SHOW_PROJECTS = 5;
 
 const highlightMenu = (pathname: string, path: string) => {
     if (pathname === path) {
@@ -16,7 +20,6 @@ const highlightMenu = (pathname: string, path: string) => {
     return "text-neutral-500 dark:text-neutral-400";
 }
 
-
 export default function SideBar() {
 
     const router = useRouter();
@@ -26,7 +29,23 @@ export default function SideBar() {
 
     const toggleSidebar = () => setIsOpen((prev) => !prev);
 
-    const [projects, setProjects] = useState<Project[]>(projectDummy);
+    
+    const projectRevalidate = useRevalidateTag("projects");
+    const [projects, setProjects] = useState<Project[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            setLoading(true);
+
+            await getProjects("", SHOW_PROJECTS + 1, 0)
+                .then((data) => {
+                    setProjects(data)
+                    setLoading(false);
+                })
+        }
+        fetchData();
+    }, [projectRevalidate])
 
     return (
         <AnimatePresence>
@@ -49,24 +68,25 @@ export default function SideBar() {
 
                         <button
                             onClick={() => router.push("/") } 
-                            className={`text-md font-medium text-left ${highlightMenu(pathname, "/")} text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-50`}
+                            className={`text-md font-medium text-left ${highlightMenu(pathname, "/")} hover:text-neutral-900 dark:hover:text-neutral-50`}
                         >
                             Home
                         </button>
 
                         <div className="flex flex-col gap-2 overflow-y-auto">
                             <span className="text-sm font-semibold text-left text-neutral-600 dark:text-neutral-300">Projects</span>
-                            {projects.slice(0, 5).map((project) => (
+                            {
+                                !loading && projects.slice(0, SHOW_PROJECTS).map((project) => (
                                 <button 
                                     key={project.project_id}
                                     onClick={() => router.push(`/project/${project.project_id}`)}
-                                    className={`"text-md line-clamp-2 font-medium text-left ${highlightMenu(pathname, `/project/${project.project_id}`)} text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-50`}
+                                    className={`"text-md line-clamp-2 font-medium text-left ${highlightMenu(pathname, `/project/${project.project_id}`)} hover:text-neutral-900 dark:hover:text-neutral-50`}
                                 >
                                     {project.project_name}
                                 </button>
                             ))}
                             {
-                                projects.length > 5 && (
+                                !loading && projects.length > SHOW_PROJECTS && (
                                     <button 
                                         onClick={() => router.push("/")}
                                         className="text-md font-medium text-left text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-50"
@@ -76,9 +96,15 @@ export default function SideBar() {
                                 )
                             }
                             {
-                                projects.length === 0 && (
+                                !loading && projects.length === 0 && (
                                     <span className="text-md font-medium text-left text-neutral-500 dark:text-neutral-400">No Projects</span>
                                 )
+                            }
+                            {
+                                loading && Array.from({ length: SHOW_PROJECTS }).map((_, i) => (
+                                    <div key={i} className="animate-pulse h-6 bg-neutral-200 dark:bg-neutral-800 rounded-2xl overflow-hidden">
+                                    </div>
+                                ))
                             }
                         </div>
 

@@ -23,11 +23,7 @@ export default function RegisterForm() {
     });
 
     const [state, action, pending] = useActionState<RegisterFormState, FormData>(async (prevState: RegisterFormState, formData: FormData) => {
-        const result = await register(prevState, formData);
-        if (result?.errors) {
-            return { errors: result.errors, values: formData }; // Preserve values on error
-        }
-        return {};
+        return await register(prevState, formData);
     }, undefined);
 
     const HandleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

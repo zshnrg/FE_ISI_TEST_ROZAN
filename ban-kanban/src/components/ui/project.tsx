@@ -1,15 +1,15 @@
-import { Project } from "@/lib/types/project";
+import { UserProject } from "@/lib/types/project";
 
-import { MdOutlineEditNote, MdArrowForwardIos } from "react-icons/md";
+import { MdOutlineEditNote, MdArrowForwardIos, MdOutlineViewHeadline } from "react-icons/md";
 
 export default function ProjectCard({
     project,
     onEdit,
     onClick,
 }: {
-    project: Project
-    onEdit: (project: Project) => void
-    onClick: (project: Project) => void
+    project: UserProject
+    onEdit: (project: UserProject) => void
+    onClick: (project: UserProject) => void
 }) {
 
     return (
@@ -22,7 +22,7 @@ export default function ProjectCard({
                 <p className="text-sm text-neutral-500 dark:text-neutral-400 line-clamp-2">{project.project_description}</p>
             </div>
             <div className="flex items-center justify-between p-2 bg-neutral-50 dark:bg-neutral-800">
-                <span className={`text-xs  ${project.project_status ? "bg-green-500 text-neutral-50 dark:text-neutral-900" : "bg-neutral-500 text-neutral-800 dark:text-neutral-50"} px-2 py-1 rounded-full`}>
+                <span className={`text-xs text-neutral-50   ${project.project_status ? "bg-green-500 dark:text-neutral-900" : "bg-neutral-400 dark:bg-neutral-500"} px-2 py-1 rounded-full`}>
                     {project.project_status ? "Active" : "Inactive"}
                 </span>
                 <div className="flex gap-2">
@@ -30,7 +30,9 @@ export default function ProjectCard({
                         onClick={() => onEdit(project)}
                         className="cursor-pointer text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-50"
                     >
-                        <MdOutlineEditNote />
+                        {
+                            project.member_role === "member" ? <MdOutlineViewHeadline /> :  <MdOutlineEditNote />
+                        }
                     </button>
                     <button
                         onClick={() => onClick(project)}
