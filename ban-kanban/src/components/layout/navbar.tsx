@@ -5,7 +5,7 @@ import { useTheme } from "@/contexts/themeContext";
 import { useToast } from "@/contexts/toastContext";
 
 import Image from "next/image";
-import { MdOutlineArrowForwardIos, MdOutlineBedtime, MdOutlineBrightness5, MdOutlineContentCopy, MdOutlineLogout, MdOutlineMenu, MdOutlineNotifications } from "react-icons/md";
+import { MdOutlineArrowForwardIos, MdOutlineBedtime, MdOutlineBrightness5, MdOutlineContentCopy, MdOutlineLogout, MdOutlineMenu } from "react-icons/md";
 import { UserProfileImage } from "../ui/profile";
 
 import { User } from "@/lib/types/auth";
@@ -33,9 +33,6 @@ export default function Navbar() {
         <nav className="fixed inset-x-0 top-0 z-50 h-14 md:h-16 bg-neutral-50 dark:bg-neutral-800 flex items-center justify-between py-2 px-6">
             <Brand />
             <div className="flex gap-4 items-center relative">
-                <button className="p-2 rounded-xl bg-neutral-200/50 dark:bg-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-600 transition-colors">
-                    <MdOutlineNotifications className="w-6 h-6 text-neutral-900 dark:text-neutral-50" />
-                </button>
                 <div ref={dropdownRef}>
                     <button
                         onClick={toggleDropdown}
