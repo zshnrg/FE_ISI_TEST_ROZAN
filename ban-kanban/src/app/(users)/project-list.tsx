@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { getProjects } from "@/lib/actions/project";
 import { Button } from "@/components/ui/buttton";
+import { useRevalidateTag } from "@/contexts/revalidateContext";
 
 const NUM_PROJECTS = 12;
 
@@ -18,6 +19,7 @@ export default function ProjectList({
     onProjectEdit: (project: Project) => void
 }) {
 
+    const projectRevalidate = useRevalidateTag("projects");
     const searchParams = useSearchParams();
     const [loading, setLoading] = useState(true);
     const [showLoadMore, setShowLoadMore] = useState(false);
@@ -44,7 +46,7 @@ export default function ProjectList({
                 })
         }
         fetchData();
-    }, [searchParams])
+    }, [searchParams, projectRevalidate])
 
     const loadMore = async () => {
         

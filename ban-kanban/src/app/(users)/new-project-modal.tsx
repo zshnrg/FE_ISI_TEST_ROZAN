@@ -9,6 +9,7 @@ import { UserProfileImage } from "@/components/ui/profile";
 import { useDisclosure } from "@/hooks/useDisclosure";
 import { useActionState, useEffect, useState } from "react";
 import { useToast } from "@/contexts/toastContext";
+import { useTriggerRevalidate } from "@/contexts/revalidateContext";
 
 import { Member } from "@/lib/types/user";
 import { NewProjectFormState } from "@/lib/definitions/project";
@@ -19,6 +20,9 @@ export default function NewProjectModal({ disclosure }: { disclosure: ReturnType
     
     // Toast
     const { toast } = useToast();
+
+    // Revalidate tags
+    const revalidateTags = useTriggerRevalidate();
 
     // The form data for the new project
     const [formData, setFormData] = useState<{ name: string, description: string, members: Member[]}>({
@@ -96,6 +100,7 @@ export default function NewProjectModal({ disclosure }: { disclosure: ReturnType
         if (response.success) {
             disclosure.onClose();
             toast("Project created successfully", "success");
+            revalidateTags("projects");
         } else {
             toast(response.message || "An error occurred while creating the project", "error");
         }
