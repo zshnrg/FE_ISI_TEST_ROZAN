@@ -3,8 +3,8 @@
 import { Button } from "@/components/ui/buttton";
 import { Input, TextArea } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
-import { MdClose, MdOutlineSearch } from "react-icons/md";
-import { UserProfileImage } from "@/components/ui/profile";
+import { MdOutlineSearch } from "react-icons/md";
+import { MemberItem } from "@/components/ui/member";
 
 import { useDisclosure } from "@/hooks/useDisclosure";
 import { useActionState, useEffect, useState } from "react";
@@ -141,30 +141,15 @@ export default function NewProjectModal({ disclosure }: { disclosure: ReturnType
                             <p className="ml-4 mt-2 text-red-500 text-sm">{memberError}</p>
                         )
                     }
-                    <div className="flex flex-col gap-2 my-4">
+                    <div className="flex flex-col gap-3 my-4">
                         {
                             formData.members.map(member => (
-                                <div key={member.user_id} className="flex items-center justify-between mx-8">
-                                    <div className="flex items-center gap-4">
-                                        <UserProfileImage full_name={member.user_full_name} size={36} bgColor={member.user_color} />
-                                        <div className="flex flex-col leading-3">
-                                            <p className="text-md font-semibold text-neutral-900 dark:text-neutral-50">{member.user_full_name}</p>
-                                            <p className="text-sm text-neutral-500 dark:text-neutral-400">{member.user_role.charAt(0).toUpperCase() + member.user_role.slice(1)}</p>
-                                        </div>
-                                    </div>
-                                    {
-                                        member.user_role === "member" && (
-                                            <button
-                                                type="button"
-                                                onClick={() => handleRemoveMember(member.user_id)}
-                                                className="text-red-500"
-                                            >
-                                                <MdClose />
-                                            </button>
-                                        )
-                                    }
-
-                                </div>
+                                <MemberItem
+                                    key={member.user_id}
+                                    member={member}
+                                    showRemove={member.user_role !== "lead"}
+                                    onRemove={handleRemoveMember}
+                                />
                             ))
                         }
                     </div>
