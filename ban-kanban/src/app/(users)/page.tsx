@@ -12,18 +12,27 @@ import { Project } from "@/lib/types/project";
 
 import { useDisclosure } from "@/hooks/useDisclosure";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useDebouncedCallback } from "use-debounce";
 
 export default function Home() {
 
     const router = useRouter();
-
-    const [search, setSearch] = useState<string>("");
+    const pathName = usePathname();
+    const searchParams = useSearchParams();
     const [focusedProject, setFocusedProject] = useState<Project | null>(null);
 
-    const handleChage = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearch(e.target.value);
-    }
+    const handleChage = useDebouncedCallback((term: string) => {
+        console.log(term);
+        const params = new URLSearchParams(searchParams);
+
+        if (term) {
+            params.set("search", term);
+        } else {
+            params.delete("search");
+        }
+        router.replace(`${pathName}?${params.toString()}`);
+    }, 500);
 
     const newProjectModal = useDisclosure();
     const editProjectModal = useDisclosure();
@@ -36,8 +45,8 @@ export default function Home() {
                     type="text" 
                     placeholder="Search project" 
                     className="w-full"
-                    value={search}
-                    onChange={handleChage}
+                    defaultValue={searchParams.get("search")?.toString()}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChage(e.target.value)}
                 />
                 <Button 
                     onClick={newProjectModal.onOpen}
@@ -50,7 +59,6 @@ export default function Home() {
             </div>
 
             <ProjectList 
-                searchPQuery={search}
                 onProjectClick={(project) => {router.push(`/project/${project.project_id}`)}}
                 onProjectEdit={(project) => {
                     setFocusedProject(project);

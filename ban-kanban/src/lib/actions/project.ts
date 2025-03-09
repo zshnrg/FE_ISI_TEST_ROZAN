@@ -4,6 +4,7 @@ import { query } from "@/lib/services/db";
 import { NewProjectFormState, ProjectFormSchema } from "@/lib/definitions/project";
 import { Member } from "@/lib/types/user";
 import { createLogs } from "./logger";
+import { getSelf } from "./user";
 
 /**
  * Creates a new project.
@@ -34,8 +35,8 @@ export async function createProject(
     const { name, description, members } = validationResult.data;
 
     const { rows: projectRow } = await query(
-        `INSERT INTO projects (project_name, project_description )
-         VALUES ($1, $2)
+        `INSERT INTO projects (project_name, project_description)
+         VALUES ($1, $2, true)
             RETURNING project_id, project_name, project_description`,
         [name, description]
     );
@@ -87,4 +88,35 @@ export async function createProject(
         message: "Project created successfully.",
         success: true
     };
+}
+
+export async function editProject(
+    state: NewProjectFormState,
+    formData: FormData,
+    projectId: string
+) {
+    return
+}
+
+export async function getProjects(
+    search: string,
+    limit: number = 12,
+    offset: number = 0
+) {
+
+    // 1. Get current user
+    const { user_id } = await getSelf();
+
+    // 2. Get projects
+    const { rows } = await query(
+        `SELECT project_members.project_id, project_name, project_description, project_status, member_role
+            FROM projects
+            LEFT JOIN project_members ON projects.project_id = project_members.project_id
+            WHERE project_members.user_id = $1
+                AND LOWER(project_name) LIKE LOWER($2)
+            LIMIT $3 OFFSET $4`,
+        [user_id, `%${search}%`, limit, offset]
+    );
+
+    return rows;
 }
