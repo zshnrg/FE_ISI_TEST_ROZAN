@@ -114,9 +114,10 @@ export default function DetailProjectModal({
                                 projectData.members.map(member => (
                                     <div key={member.user_id} className="flex items-center gap-4">
                                         <UserProfileImage full_name={member.user_full_name} size={36} bgColor={member.user_color} />
-                                        <p className="text-md font-semibold text-neutral-900 dark:text-neutral-50">
-                                            {member.user_full_name}
-                                        </p>
+                                        <div className="flex flex-col leading-5">
+                                            <p className="text-md font-semibold text-neutral-900 dark:text-neutral-50">{member.user_full_name}</p>
+                                            <p className="text-sm text-neutral-500 dark:text-neutral-400">{member.user_role.charAt(0).toUpperCase() + member.user_role.slice(1)}</p>
+                                        </div>
                                     </div>
                                 ))
                             }
