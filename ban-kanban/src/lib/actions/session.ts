@@ -9,19 +9,25 @@ const secretKey = process.env.JWT_SECRET || 'secret'
 const encodedKey = new TextEncoder().encode(secretKey)
 
 export async function encrypt(payload: SessionPayload) {
-    return new SignJWT(payload)
+    const jwt = await new SignJWT(payload)
         .setProtectedHeader({ alg: 'HS256' })
         .setIssuedAt()
+        .setIssuer('ban-kanban')
+        .setAudience('ban-kanban')
         .setExpirationTime('7d')
         .sign(encodedKey)
+
+    return jwt
 }
 
 export async function decrypt(session: string | undefined = '') {
+    if (!session) {
+        return null
+    }
+
     try {
-        const { payload } = await jwtVerify(session, encodedKey, {
-            algorithms: ['HS256'],
-        })
-        return payload
+        const { payload } = await jwtVerify(session, encodedKey, { issuer: 'ban-kanban', audience: 'ban-kanban' })
+        return payload as SessionPayload
     } catch (error) {
         console.error(error)
         return null

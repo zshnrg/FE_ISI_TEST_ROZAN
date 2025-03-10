@@ -1,4 +1,6 @@
+import { Loading } from "@/components/ui/loading";
 import Image from "next/image";
+import { Suspense } from "react";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     
@@ -6,7 +8,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className="flex items-center justify-center min-h-svh">
             <div className="bg-neutral-50 dark:bg-neutral-800 rounded-4xl flex flex-col gap-12 p-16 w-full max-w-lg">
                 <Brand />
-                {children}
+                <Suspense fallback={<div className="flex w-full h-full items-center justify-center"><Loading /></div>}>
+                    {children}
+                </Suspense>
             </div>
         </div>
     );
