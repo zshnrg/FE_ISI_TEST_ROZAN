@@ -14,6 +14,7 @@ import { AssignedTask } from "@/lib/types/task";
 import { getMember } from "@/lib/actions/member";
 import { Member } from "@/lib/types/user";
 import { getTasks, updateTaskStatus } from "@/lib/actions/task";
+import { useDebouncedCallback } from "use-debounce";
 
 const statuses = ["Not Started", "On Progress", "Done", "Reject"];
 
@@ -104,44 +105,47 @@ export default function KanbanBoard({
             })
     }
 
+    const debounceSetTasks = useDebouncedCallback((updateFn: (tasks: AssignedTask[]) => AssignedTask[]) => {
+        setTasks(updateFn);
+    }, 100);
+    
     const onDragOver = (event: DragOverEvent) => {
         const { active, over } = event;
-
-        if (!over || !active) return
-
-        const isColumn = over?.data.current?.type === "column"
-
+    
+        if (!over || !active) return;
+    
+        const isColumn = over?.data.current?.type === "column";
+    
         const actTask: AssignedTask = active.data.current?.task;
         const overStatus: string = isColumn ? over.data.current?.status : over?.data.current?.task.task_status;
-
-        if (actTask.task_status === overStatus) return
-        
-        setTasks((tasks) => {
-            // 1. Update the task status
+    
+        if (actTask.task_status === overStatus) return;
+    
+        debounceSetTasks((tasks) => {
             const newTasks = tasks.map((task) => {
                 if (task.task_id === actTask.task_id) {
-                    return {
-                        ...task,
-                        task_status: overStatus
-                    }
+                    return { ...task, task_status: overStatus };
                 }
-
                 return task;
-            })
-
-            // 2. Move to first
+            });
+    
+            // Move the updated task to the first position
             const taskIndex = newTasks.findIndex((task) => task.task_id === actTask.task_id);
-            const task = newTasks.splice(taskIndex, 1)[0];
-            newTasks.unshift(task);
-
+            if (taskIndex !== -1) {
+                const [task] = newTasks.splice(taskIndex, 1);
+                newTasks.unshift(task);
+            }
+    
             return newTasks;
-        })
-
-    }
+        });
+    };
+    
+    
+    
 
     const sensors = useSensor(PointerSensor, {
         activationConstraint: {
-            distance: 12,
+            distance: 12, 
         },
     })
 
@@ -156,11 +160,11 @@ export default function KanbanBoard({
                 <div className="grid grid-cols-4 min-w-200 w-full">
                     <SortableContext items={statuses}>
                         {
-                            columnTasks.map((tasks, index) => (
+                            columnTasks.map((colTasks, index) => (
                                 <ColumnContainer
                                     key={index}
                                     status={statuses[index]}
-                                    tasks={tasks}
+                                    tasks={colTasks}
                                     user={user}
                                     onDetail={onDetail}
                                     onEdit={onEdit}
@@ -298,6 +302,7 @@ function TaskCard({
     const style = {
         transform: transform ? `translate3d(0, ${transform.y}px, 0)` : undefined,
         transition,
+        touchAction: "none"
     };
 
 
