@@ -17,7 +17,7 @@ import { getSelf } from "@/lib/actions/user";
 import { getMember } from "@/lib/actions/member";
 import { useEffect, useState } from "react";
 import EditTaskModal from "./edit-task-modal";
-import DetailTaskModal from "./detail-modal";
+import DetailTaskModal from "./detail-task-modal";
 
 export default function Kanban() {
 

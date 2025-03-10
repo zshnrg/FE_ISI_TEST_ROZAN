@@ -191,3 +191,49 @@ export async function getProjects(
 
     return rows;
 }
+
+/**
+ * Retrieves a project by its ID.
+ * @param projectId - The ID of the project to retrieve.
+ * @returns The projectand its members.
+ */
+export async function getProject(projectId: number) {
+
+    // 1. Get current user
+    const { user_id } = await getSelf();
+
+    // 2. Get project
+    const { rows } = await query(
+        `SELECT projects.project_id, project_name, project_description, project_status, users.user_id as user_id, user_full_name, user_email, user_color, member_role as user_role
+            FROM projects
+            LEFT JOIN project_members ON projects.project_id = project_members.project_id
+            LEFT JOIN users ON project_members.user_id = users.user_id
+            WHERE projects.project_id = $1`,
+        [projectId]
+    );
+
+    if (rows.length === 0) {
+        return null;
+    }
+
+    // 3. IF user is not a member of the project, return null
+    if (!rows.find((row) => row.user_id === user_id)) {
+        return null;
+    }
+
+    const project = {
+        project_id: rows[0].project_id,
+        project_name: rows[0].project_name,
+        project_description: rows[0].project_description,
+        project_status: rows[0].project_status,
+        members: rows.map((row) => ({
+            user_id: row.user_id,
+            user_full_name: row.user_full_name,
+            user_email: row.user_email,
+            user_color: row.user_color,
+            user_role: row.user_role
+        })) as Member[]
+    };
+
+    return project;
+}

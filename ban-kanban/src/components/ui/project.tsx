@@ -1,16 +1,42 @@
 import { UserProject } from "@/lib/types/project";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { MdOutlineEditNote, MdArrowForwardIos, MdOutlineViewHeadline } from "react-icons/md";
 
 export default function ProjectCard({
     project,
     onEdit,
+    onDetail,
     onClick,
 }: {
     project: UserProject
-    onEdit: (project: UserProject) => void
+    onEdit: () => void
+    onDetail: () => void
     onClick: (project: UserProject) => void
 }) {
+
+    
+    const router = useRouter();
+    const pathName = usePathname();
+    const searchParams = useSearchParams();
+
+    const handleEdit = (term: string) => {
+        const params = new URLSearchParams(searchParams);
+
+        if (term) {
+            params.set("project", term);
+        } else {
+            params.delete("project");
+        }
+        
+        router.replace(`${pathName}?${params.toString()}`);
+
+        if (project.member_role === "member") {
+            onDetail();
+        } else {
+            onEdit();
+        }
+    }
 
     return (
         <div className="flex flex-col w-full h-full bg-neutral-100 dark:bg-neutral-800/50 rounded-2xl overflow-hidden">
@@ -27,7 +53,7 @@ export default function ProjectCard({
                 </span>
                 <div className="flex gap-2">
                     <button
-                        onClick={() => onEdit(project)}
+                        onClick={() => handleEdit(project.project_id.toString())}
                         className="cursor-pointer text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-50"
                     >
                         {
