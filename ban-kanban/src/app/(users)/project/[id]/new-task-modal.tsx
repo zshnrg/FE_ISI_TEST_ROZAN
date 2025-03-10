@@ -178,7 +178,7 @@ export default function NewTaskModal({ disclosure }: { disclosure: ReturnType<ty
                             {
                                 formData.assignee.length > 0 && (
                                     formData.assignee.map((user) => (
-                                        <div className="flex items-center w-fit gap-2 p-2 bg-neutral-50 rounded-lg text-sm text-neutral-800 dark:text-neutral-200" key={user.user_id}>
+                                        <div className="flex items-center w-fit gap-2 p-2 bg-neutral-50 dark:bg-neutral-900 rounded-lg text-sm text-neutral-800 dark:text-neutral-200" key={user.user_id}>
                                             {user.user_full_name}
                                             <MdClose onClick={() => handleRemoveMember(user.user_id)} className="cursor-pointer" />
                                         </div>
@@ -210,7 +210,7 @@ export default function NewTaskModal({ disclosure }: { disclosure: ReturnType<ty
                         }
 
                         {/* Start and End Date */}
-                        <div className="flex gap-4 items-center">
+                        <div className="flex gap-4 items-center flex-wrap md:flex-nowrap">
                             <Input
                                 id="start_date" name="start_date" type="datetime-local"
                                 defaultValue={new Date().toISOString().substring(0, 11).concat("08:00")}

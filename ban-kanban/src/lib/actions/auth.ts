@@ -2,7 +2,7 @@
 'use server';
 
 import { redirect } from "next/navigation";
-import { hash, genSaltSync, compare } from "bcrypt";
+import { hash, genSaltSync, compare } from "bcryptjs";
 
 import { query } from "@/lib/services/db";
 import { createSession, destroySession } from "@/lib/actions/session";

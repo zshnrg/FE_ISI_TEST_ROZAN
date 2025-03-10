@@ -206,7 +206,7 @@ export async function getProject(projectId: number) {
 
     // 2. Get project
     const { rows } = await query(
-        `SELECT projects.project_id, project_name, project_description, project_status, users.user_id as user_id, user_full_name, user_email, user_color, member_role as user_role
+        `SELECT projects.project_id, project_name, project_description, project_status, project_created_at, users.user_id as user_id, user_full_name, user_email, user_color, member_role as user_role
             FROM projects
             LEFT JOIN project_members ON projects.project_id = project_members.project_id
             LEFT JOIN users ON project_members.user_id = users.user_id
@@ -228,6 +228,7 @@ export async function getProject(projectId: number) {
         project_name: rows[0].project_name,
         project_description: rows[0].project_description,
         project_status: rows[0].project_status,
+        project_created_at: rows[0].project_created_at,
         members: rows.map((row) => ({
             user_id: row.user_id,
             user_full_name: row.user_full_name,

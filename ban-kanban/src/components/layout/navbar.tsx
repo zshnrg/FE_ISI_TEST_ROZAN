@@ -112,7 +112,6 @@ const Dropdown = () => {
             <hr className="border-t border-2 border-neutral-200 dark:border-neutral-700 mx-4" />
 
             <div className="flex flex-col gap-2">
-                <button className="text-md font-medium text-left text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-50">Profile</button>
                 <div ref={themeDropdownRef} className="relative">
                     <button 
                         onClick={toggleThemeDropdown}
@@ -124,8 +123,6 @@ const Dropdown = () => {
                     {isOpen && <ThemeOptions /> }
                 </div>
             </div>
-
-            <hr className="border-t border-2 border-neutral-200 dark:border-neutral-700 mx-4" />
 
             <button
                 className="flex items-center justify-between text-md font-medium text-left text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-50"
