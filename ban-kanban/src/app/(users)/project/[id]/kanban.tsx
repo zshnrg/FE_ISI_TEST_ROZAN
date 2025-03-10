@@ -205,7 +205,7 @@ function ColumnContainer({
             type: "column",
             status
         },
-        disabled: tasks.every((task) => task.assigned_user.every((u) => u.user_id !== user?.user_id)) && user?.user_role === "member"
+        disabled: true
     });
 
     const taskIds = useMemo(() => tasks.map((task) => task.task_id), [tasks]);
@@ -253,11 +253,16 @@ function TaskCard({
     [prop: string]: unknown;
 }) {
 
+    const { toast } = useToast();
     const router = useRouter();
     const pathName = usePathname();
     const searchParams = useSearchParams();
 
     const handleClick = () => {
+        if (!task.project_status) {
+            toast("This project is inactive", "warning");
+            return;
+        }
         const params = new URLSearchParams(searchParams);
         params.set("task", task.task_id.toString());
 
@@ -287,7 +292,7 @@ function TaskCard({
             type: "task",
             task,
         },
-        disabled: task.assigned_user.every((u) => u.user_id !== user?.user_id) && user?.user_role === "member"
+        disabled: (task.assigned_user.every((u) => u.user_id !== user?.user_id) && user?.user_role === "member") || !task.project_status,
     });
 
     const style = {

@@ -25,6 +25,7 @@ export async function createProject(
     const validationResult = ProjectFormSchema.safeParse({
         name: formData.get("name"),
         description: formData.get("description"),
+        status: true,
         members: JSON.parse(formData.get("members") as string)
     });
 
@@ -102,6 +103,7 @@ export async function editProject(
     const validationResult = ProjectFormSchema.safeParse({
         name: formData.get("name"),
         description: formData.get("description"),
+        status: formData.get("status") === "true",
         members: JSON.parse(formData.get("members") as string)
     });
 
@@ -112,14 +114,14 @@ export async function editProject(
     }
 
     // 2. Update the project
-    const { name, description, members } = validationResult.data;
+    const { name, description, members, status } = validationResult.data;
 
     const { rows: projectRow } = await query(
         `UPDATE projects
-            SET project_name = $1, project_description = $2
-            WHERE project_id = $3
-            RETURNING project_id, project_name, project_description`,
-        [name, description, projectId]
+            SET project_name = $1, project_description = $2, project_status = $3
+            WHERE project_id = $4
+            RETURNING project_id`,
+        [name, description, status, projectId]
     );
 
     if (projectRow.length === 0) {

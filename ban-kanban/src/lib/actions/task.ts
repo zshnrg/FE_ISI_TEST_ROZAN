@@ -243,6 +243,7 @@ export async function getTasks(project_id: number, search: string = "") {
             t.task_created_at,
             p.project_name,
             p.project_id,
+            p.project_status,
             u.user_id,
             u.user_full_name, 
             u.user_email, 
@@ -274,6 +275,7 @@ export async function getTasks(project_id: number, search: string = "") {
                 task_created_at: task.task_created_at,
                 project_id: task.project_id,
                 project_name: task.project_name,
+                project_status: task.project_status,
                 assigned_user: []
             });
         }
@@ -314,6 +316,7 @@ export async function getTask(task_id: number, project_id: number) {
             t.task_created_at,
             p.project_name,
             p.project_id,
+            p.project_status,
             u.user_id,
             u.user_full_name, 
             u.user_email, 
@@ -344,6 +347,7 @@ export async function getTask(task_id: number, project_id: number) {
                 task_created_at: task.task_created_at,
                 project_id: task.project_id,
                 project_name: task.project_name,
+                project_status: task.project_status,
                 assigned_user: []
             });
         }

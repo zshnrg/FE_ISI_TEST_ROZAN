@@ -18,6 +18,7 @@ import { getMember } from "@/lib/actions/member";
 import { useEffect, useState } from "react";
 import EditTaskModal from "./edit-task-modal";
 import DetailTaskModal from "./detail-task-modal";
+import { getProject } from "@/lib/actions/project";
 
 export default function Kanban() {
 
@@ -38,17 +39,25 @@ export default function Kanban() {
     }, 500);
     
     const [user, setUser] = useState<Member | null>(null);
+    const [projectStatus, setProjectStatus] = useState<boolean>(false);
     const [loading, setLoading] = useState(true);
     const { toast } = useToast();
 
     useEffect(() => {
         const fetchUser = async () => {
+            setLoading(true);
             await getSelf()
                 .then((data) => {
                     return getMember(parseInt(id), data.user_id);
                 })
                 .then((data) => {
                     setUser(data);
+                })
+                .then(() => {
+                    return getProject(parseInt(id))
+                })
+                .then((data) => {
+                    setProjectStatus(data?.project_status);
                 })
                 .catch((error) => {
                     toast(error.message, "error");
@@ -81,6 +90,7 @@ export default function Kanban() {
                 {
                     user?.user_role === "lead" && (
                         <Button 
+                            disabled={!projectStatus}
                             onClick={newTask.onOpen}
                             buttonType="primary"
                             className="flex items-center gap-2 shrink-0"
