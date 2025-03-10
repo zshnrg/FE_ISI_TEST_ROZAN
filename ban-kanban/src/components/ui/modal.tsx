@@ -55,11 +55,12 @@ export function Modal({ title, isOpen, onOpenChange, children, size = "md", plac
             {isOpen && (
                 <motion.div
                     key={title as string}
-                    className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center"
+                    className="fixed inset-0 bg-black/40 flex items-center justify-center"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     onClick={onOpenChange}
+                    style={{ zIndex: 1100 }}
                 >
                     <motion.div
                         className={

@@ -6,7 +6,7 @@ import { useDisclosure } from "@/hooks/useDisclosure";
 import { useToast } from "@/contexts/toastContext";
 
 import { Input } from "@/components/ui/input";
-import { MdAdd, MdSearch } from "react-icons/md";
+import { MdAdd, MdSearch, MdInfoOutline } from "react-icons/md";
 import { Button } from "@/components/ui/buttton";
 
 import KanbanBoard from "./kanban";
@@ -87,6 +87,14 @@ export default function Kanban() {
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChage(e.target.value)}
                     leadingIcon={<MdSearch/>}
                 />
+                <Button 
+                    onClick={() => router.push(`/project/${id}/info`)}
+                    buttonType="secondary"
+                    className="flex items-center bg-white gap-2 shrink-0"
+                >
+                    <span className="hidden md:block">Info</span>
+                    <MdInfoOutline/>
+                </Button>
                 {
                     user?.user_role === "lead" && (
                         <Button 

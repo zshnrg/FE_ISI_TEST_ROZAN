@@ -90,7 +90,11 @@ export default function DetailTaskModal({ disclosure }: { disclosure: ReturnType
             title="Task Detail"
             size="xl"
         >
-            {loading ? <Loading /> : (
+            {loading ? (
+                <div className="flex justify-center items-center h-48">
+                    <Loading />
+                </div>
+            ) : (
                 <div className="flex flex-col gap-4">
                     <div className="flex items-center justify-between gap-4">
                         <h4 className="text-lg font-semibold text-neutral-900 dark:text-neutral-50">{taskData.name}</h4>
