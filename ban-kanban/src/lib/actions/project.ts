@@ -210,7 +210,8 @@ export async function getProject(projectId: number) {
             FROM projects
             LEFT JOIN project_members ON projects.project_id = project_members.project_id
             LEFT JOIN users ON project_members.user_id = users.user_id
-            WHERE projects.project_id = $1`,
+            WHERE projects.project_id = $1
+            ORDER BY user_role ASC`,
         [projectId]
     );
 
