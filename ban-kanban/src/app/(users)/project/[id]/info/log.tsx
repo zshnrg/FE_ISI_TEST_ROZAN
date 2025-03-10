@@ -60,7 +60,7 @@ export default function Log() {
         <div className="flex w-full flex-col md:basis-2/3 gap-4 p-12">
             {
                 (!loading || logs?.length > 0) && logs.map((log, index) => (
-                    <div key={index} className="flex flex-col bg-neutral-50 p-4 rounded-lg">
+                    <div key={index} className="flex flex-col p-4 rounded-lg bg-neutral-50 dark:bg-neutral-800/50">
                         <p className="text-lg text-neutral-500 dark:text-neutral-400">{log.log_message}</p>
                         <span className="text-md text-neutral-800 dark:text-neutral-200 leading-5">
                             By <span className="font-semibold">{log.user_full_name}</span>

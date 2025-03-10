@@ -44,7 +44,7 @@ export default function Info() {
 
     return (
         <div className="flex w-full flex-col md:flex-row">
-            <div className="flex w-full md:basis-1/3 p-12 bg-neutral-50/50">
+            <div className="flex w-full md:basis-1/3 p-12 bg-neutral-50/50 dark:bg-neutral-800/75">
                 {
                     loading && (
                         <div className="flex flex-col h-full gap-4">
