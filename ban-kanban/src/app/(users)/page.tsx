@@ -6,21 +6,18 @@ import { MdAdd, MdSearch } from "react-icons/md";
 
 import NewProjectModal from "./new-project-modal";
 import EditProjectModal from "./edit-project-modal";
-
 import ProjectList from "./project-list";
-import { UserProject } from "@/lib/types/project";
 
 import { useDisclosure } from "@/hooks/useDisclosure";
-import { useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useDebouncedCallback } from "use-debounce";
+import DetailProjectModal from "./detail-project-modal";
 
 export default function Home() {
 
     const router = useRouter();
     const pathName = usePathname();
     const searchParams = useSearchParams();
-    const [focusedProject, setFocusedProject] = useState<UserProject |  null>(null);
 
     const handleChage = useDebouncedCallback((term: string) => {
         const params = new URLSearchParams(searchParams);
@@ -35,6 +32,7 @@ export default function Home() {
 
     const newProjectModal = useDisclosure();
     const editProjectModal = useDisclosure();
+    const detailProjectModal = useDisclosure();
 
     return (
         <div className="flex flex-col p-12 gap-6 min-h-full w-full">
@@ -60,14 +58,13 @@ export default function Home() {
 
             <ProjectList 
                 onProjectClick={(project) => {router.push(`/project/${project.project_id}`)}}
-                onProjectEdit={(project) => {
-                    setFocusedProject(project);
-                    editProjectModal.onOpen();
-                }}
+                onEdit={editProjectModal.onOpen}
+                onDetail={detailProjectModal.onOpen}
             />
 
             <NewProjectModal disclosure={newProjectModal} />
-            <EditProjectModal disclosure={editProjectModal} data={focusedProject} setData={setFocusedProject}/>
+            <EditProjectModal disclosure={editProjectModal} />
+            <DetailProjectModal disclosure={detailProjectModal} />
         </div>
     );
 }

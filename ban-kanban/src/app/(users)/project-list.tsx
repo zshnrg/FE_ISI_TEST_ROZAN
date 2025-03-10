@@ -13,14 +13,17 @@ const NUM_PROJECTS = 12;
 
 export default function ProjectList({
     onProjectClick,
-    onProjectEdit
+    onEdit,
+    onDetail
 }: {
     onProjectClick: (project: UserProject) => void
-    onProjectEdit: (project: UserProject) => void
+    onEdit: () => void
+    onDetail: () => void
 }) {
 
     const projectRevalidate = useRevalidateTag("projects");
     const searchParams = useSearchParams();
+
     const [loading, setLoading] = useState(true);
     const [showLoadMore, setShowLoadMore] = useState(false);
     const [offset, setOffset] = useState(0);
@@ -69,7 +72,7 @@ export default function ProjectList({
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {
                     (!loading || data.length > 0) && data.map(project => (
-                        <ProjectCard key={project.project_id} project={project} onClick={onProjectClick} onEdit={onProjectEdit} />
+                        <ProjectCard key={project.project_id} project={project} onClick={onProjectClick} onEdit={onEdit} onDetail={onDetail}/>
                     ))
                 }
                 {

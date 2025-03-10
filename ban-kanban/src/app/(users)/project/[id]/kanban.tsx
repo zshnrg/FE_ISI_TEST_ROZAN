@@ -1,206 +1,314 @@
-'use client'
+"use client";
 
-import { Button } from "@/components/ui/buttton";
-import { Input, TextArea } from "@/components/ui/input";
-import { Modal } from "@/components/ui/modal";
-import { MdClose } from "react-icons/md";
-import { MemberItem } from "@/components/ui/member";
-
-import { useDisclosure } from "@/hooks/useDisclosure";
-import { useActionState, useEffect, useMemo, useState } from "react";
+import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import { useSortable, SortableContext } from "@dnd-kit/sortable";
+import { DndContext, DragEndEvent, DragOverEvent, DragOverlay, DragStartEvent, PointerSensor, useSensor } from "@dnd-kit/core";
 import { useToast } from "@/contexts/toastContext";
-import { useParams } from "next/navigation";
+import { useRevalidateTag, useTriggerRevalidate } from "@/contexts/revalidateContext";
 
+import Task from "@/components/ui/task";
+
+import { getSelf } from "@/lib/actions/user";
+import { AssignedTask } from "@/lib/types/task";
+import { getMember } from "@/lib/actions/member";
 import { Member } from "@/lib/types/user";
-import { Loading } from "@/components/ui/loading";
-import { getMembers } from "@/lib/actions/member";
+import { getTasks, updateTaskStatus } from "@/lib/actions/task";
 
-type TaskFormData = {
-    name: string;
-    description: string;
-    start_date: string;
-    end_date: string;
-    status: string;
-    color: string;
-    assigned_user: Member[];
-}
+const statuses = ["Not Started", "On Progress", "Done", "Reject"];
 
+export default function KanbanBoard({
+    onDetail,
+    onEdit
+}: {
+    onDetail: () => void;
+    onEdit: () => void;
+}) {
 
-export default function NewTasktModal({ disclosure }: { disclosure: ReturnType<typeof useDisclosure> }) {
-    
+    const searchParams = useSearchParams();
+    const search = searchParams.get("search") || "";
+    const router = useRouter();
     const { id } = useParams<{ id: string }>();
-
-    // Toast
     const { toast } = useToast();
 
+    const [tasks, setTasks] = useState<AssignedTask[]>([]);
+    const [user, setUser] = useState<Member | null>(null);
 
-    // 1. Fetch members
-    const [members, setMembers] = useState<Member[]>([]);
-    const [loading, setLoading] = useState(false);
+    const tasksRevalidate = useRevalidateTag("tasks");
+    const revalidateTags = useTriggerRevalidate();
+
+    // 0. Get the user
 
     useEffect(() => {
-        async function fetchMembers() {
-            setLoading(true);
-            await getMembers(parseInt(id))
-                .then((members) => {
-                    console.log(members);
-                    setMembers(members);
+        async function fetchUser() {
+            await getSelf()
+                .then(async (user) => {
+                    return await getMember(parseInt(id), user.user_id);
+                })
+                .then((member) => {
+                    if (!member) throw new Error("You are not a member of this project");
+                    setUser(member);
                 })
                 .catch((error) => {
-                    toast("error", error.message);
-                })
-                .finally(() => {
-                    setLoading(false);
+                    toast(error.message, "error");
+                    router.push("/");
                 });
         }
+        fetchUser();
+    }, [id, router, toast]);
 
-        fetchMembers();
-    }, [id, toast]);
+    // 1. Get the tasks
 
+    useEffect(() => {
+        async function fetchTasks() {
+            await getTasks(parseInt(id), search)
+                .then((tasks) => {
+                    setTasks(tasks);
+                })
+                .catch((error) => {
+                    toast(error.message, "error");
+                })
+        }
+        fetchTasks();
+    }, [id, toast, tasksRevalidate, search]);
 
-    // The form data for the new project
-    const [formData, setFormData] = useState<TaskFormData>({
-        name: "",
-        description: "",
-        start_date: new Date().toISOString(),
-        end_date: new Date().toISOString(),
-        status: "Not Started",
-        color: "#B22222",
-        assigned_user: []
-    });
+    // 2. Group the tasks by status
+    const columnTasks: AssignedTask[][] = useMemo(() => {
+        return statuses.map((status) => tasks.filter((task) => task.task_status === status));
+    }, [tasks]);
 
-    // 2. Form data handler
-    const handleFormData = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
+    // 3. Task Dragging
+    const [activeTask, setActiveTask] = useState<AssignedTask | null>(null)
+
+    const onDragStart = ({ active }: DragStartEvent) => {
+        const task: AssignedTask = active.data.current?.task
+
+        if ((task && !task.assigned_user.every((u) => u.user_id !== user?.user_id)) || user?.user_role === "lead") {
+            setActiveTask(task);
+        }
     }
 
-    const [searchMember, setSearchMember] = useState<string>("");
-    const filtermembers = useMemo(() => {
-        if (!searchMember) return [];
-        return members.filter((member) => member.user_full_name.toLowerCase().includes(searchMember.toLowerCase()));
-    }, [searchMember, members]);
+    const onDragEnd = async ({ over }: DragEndEvent) => {
+        if (!over) return
+        if (!activeTask) return
 
-    const handlePickMember = async (user_id: string) => {
-        const user = members.find((member) => member.user_id === user_id);
-        if (!user) return
+        const isColumn = over?.data.current?.type === "column"
+        const overStatus: string = isColumn ? over.data.current?.status : over?.data.current?.task.task_status;
 
-        setFormData({
-            ...formData,
-            assigned_user: [...formData.assigned_user, user]
-        });
-
-        // Remove the user from the list
-        setMembers((prev) => prev.filter((member) => member.user_id !== user_id));
-        setSearchMember("");
+        await updateTaskStatus(parseInt(id), activeTask.task_id, overStatus)
+            .then(() => {
+                revalidateTags("tasks");
+            })
+            .catch((error) => {
+                toast(error.message, "error");
+            })
     }
 
-    const handleRemoveMember = (user_id: string) => {
-        const user = formData.assigned_user.find((member) => member.user_id === user_id);
-        if (!user) return
+    const onDragOver = (event: DragOverEvent) => {
+        const { active, over } = event;
 
-        setFormData({
-            ...formData,
-            assigned_user: formData.assigned_user.filter((member) => member.user_id !== user_id)
-        });
+        if (!over || !active) return
 
-        // Add the user back to the list
-        setMembers((prev) => [...prev, user]);
+        const isColumn = over?.data.current?.type === "column"
+
+        const actTask: AssignedTask = active.data.current?.task;
+        const overStatus: string = isColumn ? over.data.current?.status : over?.data.current?.task.task_status;
+
+        if (actTask.task_status === overStatus) return
+        
+        setTasks((tasks) => {
+            // 1. Update the task status
+            const newTasks = tasks.map((task) => {
+                if (task.task_id === actTask.task_id) {
+                    return {
+                        ...task,
+                        task_status: overStatus
+                    }
+                }
+
+                return task;
+            })
+
+            // 2. Move to first
+            const taskIndex = newTasks.findIndex((task) => task.task_id === actTask.task_id);
+            const task = newTasks.splice(taskIndex, 1)[0];
+            newTasks.unshift(task);
+
+            return newTasks;
+        })
+
     }
-    
-    return loading ? (<Loading/>) : (
-        <Modal
-            {...disclosure}
-            title="Create a new project"
-            size="xl"
-        >
-            <form className="flex flex-col gap-4">
 
-                {/* Name */}
-                <div className="flex items-center gap-4">
-                    <Input
-                        id="name" name="name" type="text"
-                        className="w-full"
-                        placeholder="Project name *"
-                    />
-                    <div className="relative flex items-center">
-                        <input type="color" id="color" name="color" value={formData.color} onChange={handleFormData}
-                            className="w-14 h-14  shrink-0 rounded-full border focus:outline-0" style={{ backgroundColor: formData.color }}
-                        />
-                    </div>
+    const sensors = useSensor(PointerSensor, {
+        activationConstraint: {
+            distance: 12,
+        },
+    })
 
-                </div>
-                
-                {/* Description */}
-                <TextArea
-                    className="min-h-24"
-                    id="description" name="description" type="text"
-                    placeholder="Project description"
-                />
-
-                <hr className="border-t border-2 border-neutral-200 dark:border-neutral-700 mx-4" />
-
-                {/* members */}
-                <div className="relative py-4 px-6 bg-neutral-100 dark:bg-neutral-700/20 rounded-4xl has-focus:ring-2 has-focus:ring-indigo-900 has-focus:ring-opacity-50 flex flex-wrap items-center gap-4">
-                    {
-                        formData.assigned_user.length > 0 && (
-                            formData.assigned_user.map((user) => (
-                                <div className="flex w-fit gap-2 p-2 bg-neutral-50 rounded-lg text-md text-neutral-800 dark:text-neutral-200" key={user.user_id}>
-                                    {user.user_full_name}
-                                    <MdClose onClick={() => handleRemoveMember(user.user_id)} className="cursor-pointer"/>
-                                </div>
+    return (
+        <div className="flex w-full min-h-[calc(100svh-240px)] overflow-x-auto rounded-2xl">
+            <DndContext
+                onDragStart={onDragStart}
+                onDragEnd={onDragEnd}
+                onDragOver={onDragOver}
+                sensors={[sensors]}
+            >
+                <div className="grid grid-cols-4 min-w-200 w-full">
+                    <SortableContext items={statuses}>
+                        {
+                            columnTasks.map((tasks, index) => (
+                                <ColumnContainer
+                                    key={index}
+                                    status={statuses[index]}
+                                    tasks={tasks}
+                                    user={user}
+                                    onDetail={onDetail}
+                                    onEdit={onEdit}
+                                />
                             ))
+                        }
+                    </SortableContext>
+                </div>
+                <DragOverlay>
+                    {
+                        activeTask && (
+                            <Task task={activeTask} />
                         )
                     }
-                    <input
-                        className="focus:outline-none w-full text-md text-neutral-800 dark:text-neutral-200"
-                        type="text"
-                        placeholder="Search member to assign"
-                        value={searchMember}
-                        onChange={(e) => setSearchMember(e.target.value)}
-                    />
-                        <div hidden={filtermembers.length === 0} className="absolute top-16 inset-x-0 w-full space-y-4 py-4 bg-neutral-100 shadow-xl dark:bg-neutral-800 rounded-xl max-h-48 overflow-y-auto">
-                            {
-                                filtermembers.map((member) => (
-                                    <MemberItem
-                                        key={member.user_id}
-                                        member={member}
-                                        onClick={() => handlePickMember(member.user_id)}
-                                    />
-                                ))
-                            }
-                        </div>
-                </div>
+                </DragOverlay>
+            </DndContext>
+        </div>
+    )
+}
 
-                {/* Start and End Date */}
-                <div className="flex gap-4 items-center">
-                    <Input
-                        id="start_date" name="start_date" type="datetime-local"
-                        defaultValue={new Date().toISOString().substring(0, 11).concat("08:00")}
-                        placeholder="Start Date" className="w-full text-sm"
-                    />
-                    <div className="w-4 h-1 bg-neutral-300 dark:bg-neutral-500 rounded-full shrink-0"></div>
-                    <Input
-                        id="end_date" name="end_date" type="datetime-local"
-                        defaultValue={new Date(new Date().setDate(new Date().getDate() + 7)).toISOString().substring(0, 11).concat("08:00")}
-                        placeholder="End Date" className="w-full text-sm"
-                    />
-                </div>
+function ColumnContainer({
+    status,
+    tasks,
+    user,
+    onDetail,
+    onEdit,
+    ...props
+}: {
+    status: string;
+    tasks: AssignedTask[];
+    user: Member | null;
+    onDetail: () => void;
+    onEdit: () => void;
+    [prop: string]: unknown;
+}) {
 
-                <div className="flex flex-col-reverse md:flex-row gap-4 mt-12">
-                    <Button buttonType="secondary" type="button" onClick={disclosure.onClose}>
-                        Cancel
-                    </Button>
-                    <Button 
-                        buttonType="primary" className="w-full"
-                    >
-                        Create
-                    </Button>
-                </div>
+    const {
+        setNodeRef
+    } = useSortable({
+        id: status,
+        data: {
+            type: "column",
+            status
+        },
+        disabled: true
+    });
 
-            </form>
-        </Modal>
-    );
+    const taskIds = useMemo(() => tasks.map((task) => task.task_id), [tasks]);
+
+    return (
+        <div ref={setNodeRef} className="bg-neutral-100/50 dark:bg-neutral-800/50" {...props}>
+            <div className="flex items-center gap-4 px-4 py-3 bg-indigo-900 text-neutral-50 dark:bg-indigo-800 dark:hover:bg-indigo-700">
+                <div
+                    className={`w-3 h-3 rounded-full ${status === "Not Started"
+                        ? "bg-neutral-400"
+                        : status === "On Progress"
+                            ? "bg-yellow-400"
+                            : status === "Done"
+                                ? "bg-green-400"
+                                : "bg-red-400"
+                        }`}
+                ></div>
+                <h1 className="text-md font-semibold">{status}</h1>
+            </div>
+            <div className="p-1 py-2 space-y-2">
+                <SortableContext items={taskIds}>
+                    {tasks.map((task, index) => (
+                        <TaskCard
+                            task={task} key={index} user={user}
+                            onDetail={onDetail} onEdit={onEdit}
+                        />
+                    ))}
+                </SortableContext>
+            </div>
+        </div>
+    )
+}
+
+function TaskCard({
+    task,
+    user,
+    onDetail,
+    onEdit,
+    ...props
+}: {
+    task: AssignedTask;
+    user: Member | null;
+    onDetail: () => void;
+    onEdit: () => void;
+    [prop: string]: unknown;
+}) {
+
+    const { toast } = useToast();
+    const router = useRouter();
+    const pathName = usePathname();
+    const searchParams = useSearchParams();
+
+    const handleClick = () => {
+        if (!task.project_status) {
+            toast("This project is inactive", "warning");
+            return;
+        }
+        const params = new URLSearchParams(searchParams);
+        params.set("task", task.task_id.toString());
+
+        if (searchParams.get("search")) {
+            router.replace(`${pathName}?${params.toString()}&search=${searchParams.get("search")}`);
+        } else {
+            router.replace(`${pathName}?${params.toString()}`);
+        }
+
+        if (user?.user_role === "lead") {
+            onEdit();
+        } else {
+            onDetail();
+        }
+    }
+
+    const {
+        setNodeRef,
+        attributes,
+        listeners,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({
+        id: task.task_id,
+        data: {
+            type: "task",
+            task,
+        },
+        disabled: (task.assigned_user.every((u) => u.user_id !== user?.user_id) && user?.user_role === "member") || !task.project_status,
+    });
+
+    const style = {
+        transform: transform ? `translate3d(0, ${transform.y}px, 0)` : undefined,
+        transition,
+    };
+
+
+    return !isDragging ? (
+        <div ref={setNodeRef} style={style} {...attributes} {...listeners} onClick={handleClick} >
+            <Task task={task} {...props} />
+        </div>
+    ) : (
+        <div ref={setNodeRef} style={style} onClick={handleClick}
+            {...attributes} {...listeners} className="border-2 border-indigo-800/20 bg-neutral-50/50 animate-pulse rounded-2xl">
+            <Task task={task} {...props} className="opacity-0" />
+        </div>
+    )
 }

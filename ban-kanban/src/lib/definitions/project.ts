@@ -11,6 +11,7 @@ export const ProjectFormSchema = z.object({
     description: z
         .string()
         .optional(),
+    status: z.boolean(),
     members: z
         .array(z.object({
             user_id: z.string(),
@@ -25,6 +26,7 @@ export type ProjectFormState = {
     errors?: {
         name?: string[];
         description?: string[];
+        status?: string[];
         members?: string[];
     };
     message?: string;
