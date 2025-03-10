@@ -2,6 +2,7 @@
 
 import { query } from "@/lib/services/db";
 import { getSelf } from "@/lib/actions/user";
+import { LogData } from "../types/log";
 
 /**
  * Creates a log entry in the database.
@@ -43,4 +44,44 @@ export async function createLogs(
     );
 
     return logs;
+}
+
+/**
+ * Fetches logs for the given project ID and task ID
+ * @param projectId - Optional project ID.
+ * @param taskId - Optional task ID.
+ * @returns A promise that resolves to an array of logs.
+ */
+
+export async function getLogs(projectId?: number, limit: number, offset: number, taskId?: number) {
+    
+    if (!taskId) {
+        const { rows } = await query(
+            `SELECT project_logs.*, users.user_full_name, projects.project_name, tasks.task_name
+            FROM project_logs 
+                LEFT JOIN users ON project_logs.log_action_by = users.user_id
+                LEFT JOIN projects ON project_logs.project_id = projects.project_id
+                LEFT JOIN tasks ON project_logs.task_id = tasks.task_id
+            WHERE projects.project_id = $1
+            ORDER BY log_created_at DESC
+            LIMIT $2 OFFSET $3`,
+            [projectId, limit, offset]
+        );
+        return rows as LogData[]
+    }
+    
+    if (!projectId) {
+        const { rows } = await query(
+            `SELECT project_logs.*, users.user_full_name, projects.project_name, tasks.task_name
+            FROM project_logs 
+                LEFT JOIN users ON project_logs.log_action_by = users.user_id
+                LEFT JOIN projects ON project_logs.project_id = projects.project_id
+                LEFT JOIN tasks ON project_logs.task_id = tasks.task_id
+            WHERE projects.project_id = $1 AND tasks.task_id = $2 
+            ORDER BY log_created_at DESC
+            LIMIT $3 OFFSET $4`,
+            [projectId, taskId, limit, offset]
+        );
+        return rows as LogData[]
+    }
 }
