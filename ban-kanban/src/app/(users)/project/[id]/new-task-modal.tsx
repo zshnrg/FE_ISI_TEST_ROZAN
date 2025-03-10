@@ -210,7 +210,7 @@ export default function NewTaskModal({ disclosure }: { disclosure: ReturnType<ty
                         }
 
                         {/* Start and End Date */}
-                        <div className="flex gap-4 items-center">
+                        <div className="flex gap-4 items-center flex-wrap md:flex-nowrap">
                             <Input
                                 id="start_date" name="start_date" type="datetime-local"
                                 defaultValue={new Date().toISOString().substring(0, 11).concat("08:00")}
