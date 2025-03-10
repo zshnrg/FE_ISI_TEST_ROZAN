@@ -165,7 +165,7 @@ const PendingTasks = () => {
         const fetchData = async () => {
             setLoading(true);
 
-            await getPendingTasks(5, 0)
+            await getPendingTasks(NUMBER_OF_TASKS, 0)
                 .then((data) => {
                     setTasks(data)
                     setLoading(false);
