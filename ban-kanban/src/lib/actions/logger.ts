@@ -53,7 +53,7 @@ export async function createLogs(
  * @returns A promise that resolves to an array of logs.
  */
 
-export async function getLogs(projectId?: number, limit: number, offset: number, taskId?: number) {
+export async function getLogs(projectId: number, limit: number, offset: number, taskId?: number) {
     
     if (!taskId) {
         const { rows } = await query(
