@@ -167,10 +167,14 @@ export default function EditTaskModal({ disclosure }: { disclosure: ReturnType<t
         <Modal
             isOpen={disclosure.isOpen}
             onOpenChange={onClose}
-            title="Create a new project"
+            title="Edit Task"
             size="xl"
         >   {
-                loading ? (<Loading />) : (
+                loading ? (
+                    <div className="flex justify-center items-center h-48">
+                        <Loading />
+                    </div>
+                ) : (
 
                     <form action={action} className="flex flex-col gap-4">
 
@@ -218,7 +222,7 @@ export default function EditTaskModal({ disclosure }: { disclosure: ReturnType<t
                             {
                                 formData.assignee.length > 0 && (
                                     formData.assignee.map((user) => (
-                                        <div className="flex items-center w-fit gap-2 p-2 bg-neutral-50 rounded-lg text-sm text-neutral-800 dark:text-neutral-200" key={user.user_id}>
+                                        <div className="flex items-center w-fit gap-2 p-2 bg-neutral-50 dark:bg-neutral-900 rounded-lg text-sm text-neutral-800 dark:text-neutral-200" key={user.user_id}>
                                             {user.user_full_name}
                                             <MdClose onClick={() => handleRemoveMember(user.user_id)} className="cursor-pointer" />
                                         </div>
