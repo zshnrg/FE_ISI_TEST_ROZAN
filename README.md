@@ -31,13 +31,41 @@ Aplikasi Kanban Board adalah sebuah platform manajemen tugas berbasis web yang d
    ```
 
 ### Running the app
-1. Jalankan `docker-compose up --build`
+1. Buat file `.env.docker` dengan template `.env.example`
+   ```.env
+   DATABASE_URL=postgres://postgres:postgres@postgres:5432/FE_ISI_TEST_ROZAN
 
-### If you want to use node instead
+   SALT_ROUNDS=10
+
+   JWT_SECRET='your_jwt_secret_key'
+
+   ```
+2. Jalankan `docker-compose up --build`
+
+### If you want to use local node instead
 1. Pindah ke direktori `ban-kanban`
-2. Install package dengan `npm install`
-3. Dont forget to setup the local database
-4. Jalankan dengan
+2. Buat file `.env.local` dengan template `.env.example`
+   ```
+   DB_USER=user
+   DB_PASSWORD=password
+   DB_HOST=localhost
+   DB_PORT=5432
+   DB_NAME=bankanban_local
+
+   SALT_ROUNDS=10
+
+   JWT_SECRET='your_jwt_secret_key'
+   ```
+3. Buat database local dengan nama yang sesuai
+   ```
+   CREATE DATABASE kanban_local;
+   ```
+4. Lakukan migrasi dengan data dari `init.sql`
+   ```
+   psql -U postgres -d kanban_local -f init.sql
+   ```
+5. Install package dengan `npm install`
+6. Build dan start aplikasi
    ```
    npm run build
    npm run start

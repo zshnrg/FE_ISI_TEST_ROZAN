@@ -34,6 +34,9 @@ services:
       - postgres
     ports:
       - "3000:3000"
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/FE_ISI_TEST_ROZAN
+      - NODE_ENV=production
 
 
 volumes:

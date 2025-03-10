@@ -3,9 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "env $(cat .env.local | xargs) next dev",
+    "dev:docker": "env $(cat .env.docker | xargs) next dev",
     "build": "next build",
     "start": "next start",
+    "start:docker": "env $(cat .env.docker | xargs) next start",
     "lint": "next lint"
   },
   "dependencies": {
