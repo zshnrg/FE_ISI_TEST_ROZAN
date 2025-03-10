@@ -45,7 +45,7 @@ Aplikasi Kanban Board adalah sebuah platform manajemen tugas berbasis web yang d
 ### If you want to use local node instead
 1. Pindah ke direktori `ban-kanban`
 2. Buat file `.env.local` dengan template `.env.example`
-   ```
+   ```.env
    DB_USER=user
    DB_PASSWORD=password
    DB_HOST=localhost
@@ -57,16 +57,16 @@ Aplikasi Kanban Board adalah sebuah platform manajemen tugas berbasis web yang d
    JWT_SECRET='your_jwt_secret_key'
    ```
 3. Buat database local dengan nama yang sesuai
-   ```
+   ```sql
    CREATE DATABASE kanban_local;
    ```
 4. Lakukan migrasi dengan data dari `init.sql`
-   ```
+   ```ps
    psql -U postgres -d kanban_local -f init.sql
    ```
 5. Install package dengan `npm install`
 6. Build dan start aplikasi
-   ```
+   ```ps
    npm run build
    npm run start
    ```
