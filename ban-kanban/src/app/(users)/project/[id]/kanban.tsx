@@ -176,7 +176,7 @@ export default function KanbanBoard({
                 <DragOverlay>
                     {
                         activeTask && (
-                            <Task task={activeTask} />
+                            <Task showUser task={activeTask} />
                         )
                     }
                 </DragOverlay>
@@ -308,12 +308,12 @@ function TaskCard({
 
     return !isDragging ? (
         <div ref={setNodeRef} style={style} {...attributes} {...listeners} onClick={handleClick} >
-            <Task task={task} {...props} />
+            <Task showUser task={task} {...props} />
         </div>
     ) : (
         <div ref={setNodeRef} style={style} onClick={handleClick}
             {...attributes} {...listeners} className="border-2 border-indigo-800/20 bg-neutral-50/50 animate-pulse rounded-2xl">
-            <Task task={task} {...props} className="opacity-0" />
+            <Task showUser task={task} {...props} className="opacity-0" />
         </div>
     )
 }

@@ -3,9 +3,9 @@ import { UserProfileImage } from "./profile";
 
 export default function Task({
     task,
-    showUser = true,
-    showProject = true,
-    showStatus = true,
+    showUser = false,
+    showProject = false,
+    showStatus = false,
     className,
     ...props
 }: {
